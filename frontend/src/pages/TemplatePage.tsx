@@ -14,6 +14,7 @@ interface TemplatePageProps {
   onSubdomainChange: (subdomain: string) => void;
 }
 
+const API_BASE = "https://api.ansh-dev.me/api";
 // const API_BASE = "http://64.227.175.36:3001/api";
 
 export default function TemplatePage({
@@ -58,7 +59,7 @@ export default function TemplatePage({
       abortRef.current = new AbortController();
       try {
         const res = await fetch(
-          `http://64.227.175.36:3001/api/deploy/check/${subdomain}`,
+          `${API_BASE}/deploy/check/${subdomain}`,
           { signal: abortRef.current.signal }
         );
         const result = await res.json();
