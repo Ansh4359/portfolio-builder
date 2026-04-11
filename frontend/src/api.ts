@@ -1,6 +1,10 @@
 import type { DeployRequest, DeployResponse, PreviewResponse, Template } from "./types";
 
-const API_BASE = "http://localhost:3001/api";
+
+const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = "http://localhost:3001/api";
+
+
 
 export async function fetchTemplates(): Promise<Template[]> {
   const res = await fetch(`${API_BASE}/templates`);

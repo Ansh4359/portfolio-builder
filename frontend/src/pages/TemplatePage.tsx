@@ -14,6 +14,8 @@ interface TemplatePageProps {
   onSubdomainChange: (subdomain: string) => void;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE;
+
 export default function TemplatePage({
   data,
   selectedTemplate,
@@ -26,8 +28,8 @@ export default function TemplatePage({
   const [previewHtml, setPreviewHtml] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
   const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  const abortRef = useRef<AbortController>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const abortRef = useRef<AbortController>(undefined);
 
   useEffect(() => {
     fetchTemplates().then(setTemplates).catch(console.error);
@@ -56,7 +58,7 @@ export default function TemplatePage({
       abortRef.current = new AbortController();
       try {
         const res = await fetch(
-          `http://localhost:3001/api/deploy/check/${subdomain}`,
+          `${API_BASE}/deploy/check/${subdomain}`,
           { signal: abortRef.current.signal }
         );
         const result = await res.json();
