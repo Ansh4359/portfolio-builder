@@ -1,8 +1,8 @@
 import type { DeployRequest, DeployResponse, PreviewResponse, Template } from "./types";
 
 
-const API_BASE = import.meta.env.VITE_API_BASE;
-// const API_BASE = "http://localhost:3001/api";
+// const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = "http://64.227.175.36:3001/api";
 
 
 

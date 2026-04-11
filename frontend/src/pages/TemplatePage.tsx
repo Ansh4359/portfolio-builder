@@ -14,7 +14,7 @@ interface TemplatePageProps {
   onSubdomainChange: (subdomain: string) => void;
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = "http://64.227.175.36:3001/api";
 
 export default function TemplatePage({
   data,
@@ -58,7 +58,7 @@ export default function TemplatePage({
       abortRef.current = new AbortController();
       try {
         const res = await fetch(
-          `${API_BASE}/deploy/check/${subdomain}`,
+          `http://64.227.175.36:3001/api/deploy/check/${subdomain}`,
           { signal: abortRef.current.signal }
         );
         const result = await res.json();
