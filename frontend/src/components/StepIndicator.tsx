@@ -10,20 +10,42 @@ const steps = [
 
 export default function StepIndicator({ current }: StepIndicatorProps) {
   return (
-    <div className="steps">
-      {steps.map((step, i) => (
-        <div key={step.num} className="step-wrapper" style={{ display: "flex", alignItems: "center" }}>
-          <div className={`step ${current === step.num ? "active" : ""} ${current > step.num ? "done" : ""}`}>
-            <div className="step-num">
-              {current > step.num ? "✓" : step.num}
+    <div className="flex justify-center gap-2 py-6">
+      {steps.map((step, i) => {
+        const isActive = current === step.num;
+        const isDone = current > step.num;
+        return (
+          <div key={step.num} className="flex items-center">
+            <div className={`flex items-center gap-2 ${isActive ? "" : isDone ? "" : ""}`}>
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors ${
+                  isActive
+                    ? "bg-charcoal text-cream-light"
+                    : isDone
+                      ? "bg-success text-white"
+                      : "bg-charcoal/[0.04] text-muted"
+                }`}
+              >
+                {isDone ? "✓" : step.num}
+              </div>
+              <span
+                className={`text-sm ${
+                  isActive ? "text-charcoal" : "text-muted"
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
-            <span className="step-label">{step.label}</span>
+            {i < steps.length - 1 && (
+              <div
+                className={`w-10 h-0.5 mx-1 ${
+                  isDone ? "bg-success" : "bg-border"
+                }`}
+              />
+            )}
           </div>
-          {i < steps.length - 1 && (
-            <div className={`step-connector ${current > step.num ? "done" : ""}`} />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

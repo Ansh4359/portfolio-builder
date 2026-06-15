@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
 import FormPage from "./pages/FormPage";
 import TemplatePage from "./pages/TemplatePage";
 import DeployPage from "./pages/DeployPage";
+import LoginPage from "./pages/LoginPage";
 import { emptyPortfolio } from "./types";
 import type { PortfolioData } from "./types";
 
@@ -13,37 +17,47 @@ function App() {
   const [subdomain, setSubdomain] = useState("");
 
   return (
-    <>
+    <AuthProvider>
       <Navbar />
       <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route
-          path="/"
-          element={<FormPage data={data} onChange={setData} />}
+          path="/create"
+          element={
+            <ProtectedRoute>
+              <FormPage data={data} onChange={setData} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/template"
           element={
-            <TemplatePage
-              data={data}
-              selectedTemplate={selectedTemplate}
-              subdomain={subdomain}
-              onTemplateChange={setSelectedTemplate}
-              onSubdomainChange={setSubdomain}
-            />
+            <ProtectedRoute>
+              <TemplatePage
+                data={data}
+                selectedTemplate={selectedTemplate}
+                subdomain={subdomain}
+                onTemplateChange={setSelectedTemplate}
+                onSubdomainChange={setSubdomain}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/deploy"
           element={
-            <DeployPage
-              data={data}
-              selectedTemplate={selectedTemplate}
-              subdomain={subdomain}
-            />
+            <ProtectedRoute>
+              <DeployPage
+                data={data}
+                selectedTemplate={selectedTemplate}
+                subdomain={subdomain}
+              />
+            </ProtectedRoute>
           }
         />
       </Routes>
-    </>
+    </AuthProvider>
   );
 }
 

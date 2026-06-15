@@ -1,23 +1,27 @@
-import { Hono } from "hono";
-import { templates } from "../templates";
+import { Router, Request, Response } from "express";
+import { templates } from "../templates/index.js";
 
-const app = new Hono();
+const router = Router();
 
-app.get("/", (c) => {
-  return c.json(
-    templates.map(({ id, name, description, thumbnail }) => ({
+router.get("/", (req: Request, res: Response) => {
+  const templateList = templates.map(
+    ({ id, name, description, thumbnail }) => ({
       id,
       name,
       description,
       thumbnail,
-    }))
+    })
   );
+  res.json(templateList);
 });
 
-app.get("/:id", (c) => {
-  const template = templates.find((t) => t.id === c.req.param("id"));
-  if (!template) return c.json({ error: "Template not found" }, 404);
-  return c.json({
+router.get("/:id", (req: Request, res: Response) => {
+  const template = templates.find((t) => t.id === req.params.id);
+  if (!template) {
+    res.status(404).json({ error: "Template not found" });
+    return;
+  }
+  res.json({
     id: template.id,
     name: template.name,
     description: template.description,
@@ -25,4 +29,4 @@ app.get("/:id", (c) => {
   });
 });
 
-export default app;
+export default router;

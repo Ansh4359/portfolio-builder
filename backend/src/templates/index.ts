@@ -3,6 +3,10 @@ import { generateMinimal } from "./minimal";
 import { generateCreative } from "./creative";
 import { generateDeveloper } from "./developer";
 import { generateModern } from "./modern";
+import { generateElegant } from "./elegant";
+import { generateGlass } from "./glass";
+import { generateMono } from "./mono";
+import { generateSunset } from "./sunset";
 
 export interface Template {
   id: string;
@@ -40,6 +44,34 @@ export const templates: Template[] = [
     description: "Contemporary design with soft gradients and refined spacing",
     thumbnail: "linear-gradient(135deg, #fefefe 0%, #ede9fe 50%, #6d28d9 150%)",
     generate: generateModern,
+  },
+  {
+    id: "elegant",
+    name: "Elegant",
+    description: "Luxurious dark theme with gold accents and timeline layout",
+    thumbnail: "linear-gradient(135deg, #0f0d0a 0%, #1a1714 50%, #d4a853 150%)",
+    generate: generateElegant,
+  },
+  {
+    id: "glass",
+    name: "Glass",
+    description: "Glassmorphism design with frosted panels and animated background",
+    thumbnail: "linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #7c6aef 150%)",
+    generate: generateGlass,
+  },
+  {
+    id: "mono",
+    name: "Mono",
+    description: "Monochrome typographic design with clean tabular layout",
+    thumbnail: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #111111 150%)",
+    generate: generateMono,
+  },
+  {
+    id: "sunset",
+    name: "Sunset",
+    description: "Warm gradient theme with bold typography and glowing accents",
+    thumbnail: "linear-gradient(135deg, #1a0f0a 0%, #2a1a12 50%, #ff6b35 150%)",
+    generate: generateSunset,
   },
 ];
 

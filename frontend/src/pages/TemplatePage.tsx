@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import StepIndicator from "../components/StepIndicator";
 import TemplateCard from "../components/TemplateCard";
 import SubdomainInput from "../components/SubdomainInput";
-import { fetchTemplates, fetchPreview } from "../api";
+import { fetchTemplates, fetchPreview, checkSubdomain } from "../api";
 import type { PortfolioData, Template } from "../types";
 
 interface TemplatePageProps {
@@ -14,8 +14,8 @@ interface TemplatePageProps {
   onSubdomainChange: (subdomain: string) => void;
 }
 
-const API_BASE = "https://api.ansh-dev.me/api";
-// const API_BASE = "http://64.227.175.36:3001/api";
+const inputCls =
+  "px-3 py-2.5 border border-border rounded-sm bg-cream text-charcoal placeholder:text-muted focus:outline-none focus:border-blue-500/50 focus:ring-3 focus:ring-blue-500/15 transition-[box-shadow,border-color]";
 
 export default function TemplatePage({
   data,
@@ -30,7 +30,6 @@ export default function TemplatePage({
   const [previewLoading, setPreviewLoading] = useState(false);
   const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const abortRef = useRef<AbortController>(undefined);
 
   useEffect(() => {
     fetchTemplates().then(setTemplates).catch(console.error);
@@ -47,7 +46,6 @@ export default function TemplatePage({
 
   useEffect(() => {
     clearTimeout(timerRef.current);
-    abortRef.current?.abort();
 
     if (subdomain.length < 3) {
       setCheckStatus("idle");
@@ -56,39 +54,31 @@ export default function TemplatePage({
 
     setCheckStatus("checking");
     timerRef.current = setTimeout(async () => {
-      abortRef.current = new AbortController();
       try {
-        const res = await fetch(
-          `${API_BASE}/deploy/check/${subdomain}`,
-          { signal: abortRef.current.signal }
-        );
-        const result = await res.json();
-        setCheckStatus(result.available ? "available" : "taken");
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          setCheckStatus("idle");
-        }
+        const available = await checkSubdomain(subdomain);
+        setCheckStatus(available ? "available" : "taken");
+      } catch {
+        setCheckStatus("idle");
       }
     }, 400);
 
     return () => {
       clearTimeout(timerRef.current);
-      abortRef.current?.abort();
     };
   }, [subdomain]);
 
   const canDeploy = selectedTemplate && checkStatus === "available";
 
   return (
-    <div className="page">
-      <div className="container">
+    <div className="py-6 pb-[60px] flex-1">
+      <div className="max-w-[1200px] mx-auto px-6">
         <StepIndicator current={2} />
-        <div className="page-header">
-          <h1>Choose your style</h1>
-          <p>Pick a template and set your subdomain</p>
+        <div className="text-center mb-8">
+          <h1 className="text-[28px] font-semibold mb-2 tracking-[-0.5px]">Choose your style</h1>
+          <p className="text-muted">Pick a template and set your subdomain</p>
         </div>
 
-        <div className="template-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
           {templates.map((t) => (
             <TemplateCard
               key={t.id}
@@ -105,47 +95,50 @@ export default function TemplatePage({
         />
 
         {checkStatus === "checking" && (
-          <div className="subdomain-status" style={{ color: "var(--text-muted)" }}>
+          <div className="text-sm text-muted mt-1.5">
             Checking availability...
           </div>
         )}
         {checkStatus === "available" && (
-          <div className="subdomain-status available">
+          <div className="text-sm text-success mt-1.5">
             ✓ Available — your site will be at https://{subdomain}.vercel.app
           </div>
         )}
         {checkStatus === "taken" && (
-          <div className="subdomain-status taken">
+          <div className="text-sm text-error mt-1.5">
             ✗ Already taken — try a different name
           </div>
         )}
 
         {selectedTemplate && (
-          <div className="preview-container">
-            <div className="preview-header">
-              <h3>Preview: {templates.find((t) => t.id === selectedTemplate)?.name}</h3>
-              {previewLoading && <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Loading...</span>}
+          <div className="bg-cream border border-border rounded-xl overflow-hidden mb-6 mt-4">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h3 className="text-sm font-normal">Preview: {templates.find((t) => t.id === selectedTemplate)?.name}</h3>
+              {previewLoading && <span className="text-sm text-muted">Loading...</span>}
             </div>
             {previewHtml ? (
               <iframe
-                className="preview-iframe"
+                className="w-full h-[500px] border-none"
                 srcDoc={previewHtml}
                 title="Template Preview"
               />
             ) : (
-              <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>
+              <div className="p-10 text-center text-muted">
                 {previewLoading ? "Generating preview..." : "Select a template to see preview"}
               </div>
             )}
           </div>
         )}
 
-        <div className="page-actions">
-          <button className="btn btn-outline" onClick={() => navigate("/")}>
+        <div className="flex justify-between gap-4 mt-8">
+          <button
+            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+            onClick={() => navigate("/create")}
+          >
             ← Back to Info
           </button>
           <button
-            className="btn btn-primary"
+            className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
             disabled={!canDeploy}
             onClick={() => navigate("/deploy")}
           >
