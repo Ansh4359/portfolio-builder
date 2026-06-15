@@ -12,6 +12,8 @@ import deployRoutes from "./routes/deploy.js";
 import authRoutes from "./routes/auth.js";
 import portfolioRoutes from "./routes/portfolio.js";
 import profileRoutes from "./routes/profile.js";
+import analyticsRoutes from "./routes/analytics.js";
+import sitemapRoutes from "./routes/sitemap.js";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3001", 10);
@@ -19,12 +21,16 @@ const port = parseInt(process.env.PORT || "3001", 10);
 app.use(helmet());
 app.use(cors({ origin: "*" }));
 app.use(express.json());
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-  })
-);
+
+// Rate limiting - more permissive for development
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100,
+    })
+  );
+}
 
 app.get("/", (req, res) => {
   res.json({
@@ -51,6 +57,8 @@ app.use("/api/deploy", deployRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolios", portfolioRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/", sitemapRoutes);
 
 app.use(
   (

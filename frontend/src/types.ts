@@ -65,6 +65,33 @@ export interface PreviewResponse {
   html: string;
 }
 
+export interface AccountInfo {
+  id: string;
+  firebaseUid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  tier: "free" | "pro";
+  tierUpdatedAt?: string;
+  portfoliosLimit: number;
+  deploymentsLimit: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AITemplateInfo {
+  _id: string;
+  name: string;
+  prompt: string;
+  createdAt: string;
+}
+
+export interface AIUsage {
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+}
+
 export function emptyPortfolio(): PortfolioData {
   return {
     name: "",

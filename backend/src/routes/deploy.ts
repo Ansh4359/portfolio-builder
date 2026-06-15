@@ -2,11 +2,29 @@ import { Router, Request, Response } from "express";
 import { authenticateToken, requireAuth } from "../middleware/auth.js";
 import { getTemplate } from "../templates/index.js";
 import { Portfolio } from "../models/Portfolio.js";
+import { AITemplate } from "../models/AITemplate.js";
+import { User } from "../models/User.js";
 import {
   deployToVercel,
   sanitizeProjectName,
   checkProjectExists,
 } from "../lib/vercel.js";
+import { generateMetaTags, generateTrackingScript } from "../lib/seo.js";
+import { sendDeploymentEmail } from "../lib/email.js";
+import type { PortfolioData } from "../types/index.js";
+
+function renderAITemplate(htmlTemplate: string, data: PortfolioData): string {
+  try {
+    const esc = (s: string) => (s ? String(s).replace(/</g, "&lt;").replace(/>/g, "&gt;") : "");
+    const fn = new Function("data", "esc", "return `" + htmlTemplate + "`;");
+    return fn(data, esc);
+  } catch (err) {
+    console.error("[renderAITemplate] Error:", err);
+    return htmlTemplate;
+  }
+}
+
+const API_BASE = process.env.API_URL || "http://localhost:3001";
 
 const router = Router();
 
@@ -46,15 +64,30 @@ router.post(
         return;
       }
 
-      const template = getTemplate(templateId);
-      if (!template) {
-        res
-          .status(400)
-          .json({ error: `Template "${templateId}" not found` });
-        return;
+      let html: string;
+
+      if (templateId.startsWith("ai-")) {
+        const aiId = templateId.replace("ai-", "");
+        const aiTemplate = await AITemplate.findOne({
+          _id: aiId,
+          userId: req.user?._id,
+        });
+        if (!aiTemplate) {
+          res.status(404).json({ error: "AI template not found" });
+          return;
+        }
+        html = renderAITemplate(aiTemplate.html, data);
+      } else {
+        const template = getTemplate(templateId);
+        if (!template) {
+          res
+            .status(400)
+            .json({ error: `Template "${templateId}" not found` });
+          return;
+        }
+        html = template.generate(data);
       }
 
-      const html = template.generate(data);
       console.log(
         `[preview] template=${templateId}  html=${html.length} chars`
       );
@@ -100,12 +133,28 @@ router.post(
         return;
       }
 
-      const template = getTemplate(templateId);
-      if (!template) {
-        res
-          .status(400)
-          .json({ error: `Template "${templateId}" not found` });
-        return;
+      let html: string;
+
+      if (templateId.startsWith("ai-")) {
+        const aiId = templateId.replace("ai-", "");
+        const aiTemplate = await AITemplate.findOne({
+          _id: aiId,
+          userId: req.user?._id,
+        });
+        if (!aiTemplate) {
+          res.status(404).json({ error: "AI template not found" });
+          return;
+        }
+        html = renderAITemplate(aiTemplate.html, data);
+      } else {
+        const template = getTemplate(templateId);
+        if (!template) {
+          res
+            .status(400)
+            .json({ error: `Template "${templateId}" not found` });
+          return;
+        }
+        html = template.generate(data);
       }
 
       let projectName: string;
@@ -142,15 +191,12 @@ router.post(
         return;
       }
 
-      const html = template.generate(data);
-      console.log(`[deploy] HTML generated: ${html.length} chars`);
+      // Step 1: Inject SEO meta tags into <head>
+      const deployedUrl = `https://${projectName}.vercel.app`;
+      const seoTags = generateMetaTags(data, deployedUrl);
+      html = html.replace("</head>", `${seoTags}\n</head>`);
 
-      const result = await deployToVercel(
-        projectName,
-        { "index.html": html },
-        subdomain
-      );
-
+      // Step 2: Create Portfolio in MongoDB first (to get portfolioId)
       const portfolio = await Portfolio.create({
         userId: req.user?._id,
         name: data.name,
@@ -166,10 +212,38 @@ router.post(
         socials: data.socials || {},
         templateId,
         subdomain: projectName,
-        deploymentUrl: result.url,
+        deploymentUrl: deployedUrl,
       });
 
       console.log(`[deploy] Portfolio saved to DB: ${portfolio._id}`);
+
+      // Step 3: Inject tracking script into </body>
+      const trackingScript = generateTrackingScript(
+        portfolio._id.toString(),
+        API_BASE
+      );
+      html = html.replace("</body>", `${trackingScript}\n</body>`);
+
+      // Step 4: Deploy to Vercel (with SEO + tracking)
+      console.log(`[deploy] HTML ready: ${html.length} chars`);
+
+      const result = await deployToVercel(
+        projectName,
+        { "index.html": html },
+        subdomain
+      );
+
+      console.log(`[deploy] Deployed to: ${result.url}`);
+
+      // Step 5: Send deployment email
+      const user = await User.findById(req.user?._id).select("email displayName");
+      if (user?.email) {
+        sendDeploymentEmail(
+          user.email,
+          data.name,
+          result.url
+        ).catch(console.error);
+      }
 
       res.json({
         success: true,

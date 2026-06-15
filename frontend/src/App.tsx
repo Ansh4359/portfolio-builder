@@ -15,7 +15,7 @@ import { emptyPortfolio } from "./types";
 import type { PortfolioData } from "./types";
 
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [data, setData] = useState<PortfolioData>(emptyPortfolio());
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [subdomain, setSubdomain] = useState("");
@@ -39,7 +39,11 @@ function AppRoutes() {
       <Route
         path="/"
         element={
-          user ? (
+          loading ? (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="w-10 h-10 border-3 border-border border-t-charcoal rounded-full animate-spin" />
+            </div>
+          ) : user ? (
             <ProtectedRoute>
               <DashboardPage />
             </ProtectedRoute>

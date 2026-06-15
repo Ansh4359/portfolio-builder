@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { getAuthInstance, isFirebaseConfigured } from "../config/firebase.js";
 import { User, IUser } from "../models/User.js";
+import { sendWelcomeEmail } from "../lib/email.js";
 
 declare global {
   namespace Express {
@@ -47,6 +48,11 @@ export async function authenticateToken(
           decodedToken.name || decodedToken.email?.split("@")[0] || "",
         photoURL: decodedToken.picture,
       });
+
+      // Send welcome email (fire-and-forget)
+      if (user.email) {
+        sendWelcomeEmail(user.email, user.displayName).catch(console.error);
+      }
     }
 
     req.user = user;

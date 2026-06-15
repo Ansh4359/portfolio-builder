@@ -13,6 +13,7 @@ interface Portfolio {
   subdomain?: string;
   deploymentUrl?: string;
   updatedAt: string;
+  views?: number;
 }
 
 export default function DashboardPage() {
@@ -29,8 +30,8 @@ export default function DashboardPage() {
       try {
         const p = await fetchProfile();
         setProfile(p);
-      } catch {
-        // No profile yet
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
       }
 
       try {
@@ -45,9 +46,11 @@ export default function DashboardPage() {
         if (res.ok) {
           const data = await res.json();
           setPortfolios(data);
+        } else {
+          console.error("Failed to fetch portfolios:", res.status, res.statusText);
         }
-      } catch {
-        // No portfolios yet
+      } catch (err) {
+        console.error("Failed to fetch portfolios:", err);
       }
 
       setLoading(false);
@@ -302,10 +305,19 @@ export default function DashboardPage() {
                       )}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {p.deploymentUrl && (
                       <span className="text-xs px-2 py-1 bg-charcoal text-cream-light rounded-full">
                         Live
+                      </span>
+                    )}
+                    {p.views !== undefined && p.views > 0 && (
+                      <span className="flex items-center gap-1 text-xs text-muted">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        {p.views.toLocaleString()}
                       </span>
                     )}
                     <span className="text-xs text-muted">

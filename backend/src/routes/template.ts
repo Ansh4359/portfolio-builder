@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
 import { templates } from "../templates/index.js";
+import { AITemplate } from "../models/AITemplate.js";
+import { User } from "../models/User.js";
+import { authenticateToken, requireAuth } from "../middleware/auth.js";
+import { generateTemplateWithAI } from "../services/mimo.js";
 import type { PortfolioData } from "../types/index.js";
 
 const router = Router();
@@ -58,6 +62,7 @@ const samplePortfolio: PortfolioData = {
   },
 };
 
+// GET / — List all templates
 router.get("/", (req: Request, res: Response) => {
   const templateList = templates.map(
     ({ id, name, description, thumbnail }) => ({
@@ -70,6 +75,174 @@ router.get("/", (req: Request, res: Response) => {
   res.json(templateList);
 });
 
+// POST /generate — Generate AI template
+router.post(
+  "/generate",
+  authenticateToken,
+  requireAuth,
+  async (req: Request, res: Response) => {
+    try {
+      const { prompt } = req.body;
+
+      if (!prompt || typeof prompt !== "string" || prompt.trim().length < 3) {
+        res.status(400).json({
+          error: "Please provide a valid prompt (at least 3 characters)",
+        });
+        return;
+      }
+
+      const wordCount = prompt.trim().split(/\s+/).length;
+      if (wordCount > 40) {
+        res.status(400).json({
+          error: "Prompt must be 40 words or less",
+        });
+        return;
+      }
+
+      const user = await User.findById(req.user?._id);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      // Rate limit check for free tier
+      if (user.tier === "free") {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const usedToday = await AITemplate.countDocuments({
+          userId: user._id,
+          createdAt: { $gte: today },
+        });
+
+        if (usedToday >= 2) {
+          res.status(429).json({
+            error:
+              "Daily AI template limit reached (2 per day). Upgrade to Pro for unlimited generations.",
+            remaining: 0,
+            limit: 2,
+          });
+          return;
+        }
+      }
+
+      console.log(
+        `[ai-template] Generating for user ${user._id}: "${prompt.slice(0, 50)}..."`
+      );
+
+      const result = await generateTemplateWithAI(prompt.trim());
+
+      const aiTemplate = await AITemplate.create({
+        userId: user._id,
+        prompt: prompt.trim(),
+        name: result.name,
+        html: result.html,
+      });
+
+      // Calculate remaining
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const usedToday = await AITemplate.countDocuments({
+        userId: user._id,
+        createdAt: { $gte: today },
+      });
+      const remaining = user.tier === "free" ? 2 - usedToday : null;
+
+      console.log(`[ai-template] Generated: "${result.name}" (${aiTemplate._id})`);
+
+      res.json({
+        id: aiTemplate._id,
+        name: result.name,
+        html: result.html,
+        remaining,
+      });
+    } catch (error: any) {
+      console.error("[ai-template] Generate error:", error);
+      res.status(500).json({
+        error: error.message || "Failed to generate template",
+      });
+    }
+  }
+);
+
+// GET /ai-usage — Get AI usage stats for current user
+router.get(
+  "/ai-usage",
+  authenticateToken,
+  requireAuth,
+  async (req: Request, res: Response) => {
+    try {
+      const user = await User.findById(req.user?._id);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const used = await AITemplate.countDocuments({
+        userId: user._id,
+        createdAt: { $gte: today },
+      });
+
+      const limit = user.tier === "pro" ? null : 2;
+      const remaining = limit !== null ? Math.max(0, limit - used) : null;
+
+      res.json({ used, limit, remaining });
+    } catch (error) {
+      console.error("[ai-template] Usage check error:", error);
+      res.status(500).json({ error: "Failed to check usage" });
+    }
+  }
+);
+
+// GET /ai-history — Get user's AI template history
+router.get(
+  "/ai-history",
+  authenticateToken,
+  requireAuth,
+  async (req: Request, res: Response) => {
+    try {
+      const aiTemplates = await AITemplate.find({ userId: req.user?._id })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .select("_id name prompt createdAt");
+
+      res.json(aiTemplates);
+    } catch (error) {
+      console.error("[ai-template] History error:", error);
+      res.status(500).json({ error: "Failed to fetch history" });
+    }
+  }
+);
+
+// GET /ai/:id — Get specific AI template
+router.get(
+  "/ai/:id",
+  authenticateToken,
+  requireAuth,
+  async (req: Request, res: Response) => {
+    try {
+      const template = await AITemplate.findOne({
+        _id: req.params.id,
+        userId: req.user?._id,
+      });
+
+      if (!template) {
+        res.status(404).json({ error: "AI template not found" });
+        return;
+      }
+
+      res.json(template);
+    } catch (error) {
+      console.error("[ai-template] Get template error:", error);
+      res.status(500).json({ error: "Failed to fetch template" });
+    }
+  }
+);
+
+// GET /:id/preview — Get template preview with sample data
 router.get("/:id/preview", (req: Request, res: Response) => {
   const template = templates.find((t) => t.id === req.params.id);
   if (!template) {
@@ -80,6 +253,7 @@ router.get("/:id/preview", (req: Request, res: Response) => {
   res.json({ html });
 });
 
+// GET /:id — Get template metadata (catch-all, MUST be last)
 router.get("/:id", (req: Request, res: Response) => {
   const template = templates.find((t) => t.id === req.params.id);
   if (!template) {

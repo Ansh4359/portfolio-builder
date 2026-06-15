@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 import SoftAurora from "../components/SoftAurora";
 import { previews, templateList } from "../data/templateGenerators";
 
@@ -51,6 +52,7 @@ const stats = [
 export default function HomePage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { theme } = useTheme();
 
   const handleGetStarted = () => {
     if (loading) return;
@@ -65,9 +67,9 @@ export default function HomePage() {
           <SoftAurora
             speed={0.4}
             scale={1.2}
-            brightness={0.8}
-            color1="#f7f4ed"
-            color2="#c4b5fd"
+            brightness={theme === "dark" ? 0.6 : 0.8}
+            color1={theme === "dark" ? "#141413" : "#f7f4ed"}
+            color2={theme === "dark" ? "#6d5a9e" : "#c4b5fd"}
             noiseFrequency={2.0}
             noiseAmplitude={0.8}
             bandHeight={0.6}

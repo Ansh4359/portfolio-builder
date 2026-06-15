@@ -125,7 +125,7 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
               </a>
               <button
                 className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
-                onClick={() => navigate("/create")}
+                onClick={() => navigate("/")}
               >
                 Create Another
               </button>

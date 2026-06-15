@@ -5,6 +5,10 @@ export interface IUser extends Document {
   email: string;
   displayName: string;
   photoURL?: string;
+  tier: "free" | "pro";
+  tierUpdatedAt?: Date;
+  portfoliosLimit: number;
+  deploymentsLimit: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +31,22 @@ const userSchema = new Schema<IUser>(
     },
     photoURL: {
       type: String,
+    },
+    tier: {
+      type: String,
+      enum: ["free", "pro"],
+      default: "free",
+    },
+    tierUpdatedAt: {
+      type: Date,
+    },
+    portfoliosLimit: {
+      type: Number,
+      default: 10,
+    },
+    deploymentsLimit: {
+      type: Number,
+      default: 3,
     },
   },
   {

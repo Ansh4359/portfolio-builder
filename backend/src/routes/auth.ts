@@ -17,6 +17,10 @@ router.get("/me", authenticateToken, async (req: Request, res: Response) => {
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
+      tier: user.tier,
+      tierUpdatedAt: user.tierUpdatedAt,
+      portfoliosLimit: user.portfoliosLimit,
+      deploymentsLimit: user.deploymentsLimit,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
@@ -28,11 +32,19 @@ router.get("/me", authenticateToken, async (req: Request, res: Response) => {
 
 router.put("/me", authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { displayName, photoURL } = req.body;
+    const { displayName, photoURL, tier } = req.body;
+
+    const updateData: Record<string, any> = {};
+    if (displayName) updateData.displayName = displayName;
+    if (photoURL) updateData.photoURL = photoURL;
+    if (tier && ["free", "pro"].includes(tier)) {
+      updateData.tier = tier;
+      updateData.tierUpdatedAt = new Date();
+    }
 
     const user = await User.findOneAndUpdate(
       { firebaseUid: req.user?.firebaseUid },
-      { ...(displayName && { displayName }), ...(photoURL && { photoURL }) },
+      updateData,
       { new: true }
     );
 
@@ -47,6 +59,10 @@ router.put("/me", authenticateToken, async (req: Request, res: Response) => {
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
+      tier: user.tier,
+      tierUpdatedAt: user.tierUpdatedAt,
+      portfoliosLimit: user.portfoliosLimit,
+      deploymentsLimit: user.deploymentsLimit,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });

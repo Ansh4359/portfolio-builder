@@ -160,7 +160,7 @@ export default function ProfilePage() {
   return (
     <div className="py-6 pb-[60px] flex-1">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-[28px] font-semibold mb-2 tracking-[-0.5px]">Your Profile</h1>
           <p className="text-muted">Manage your portfolio details</p>
         </div>

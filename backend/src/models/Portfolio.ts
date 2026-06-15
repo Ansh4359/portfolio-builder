@@ -35,6 +35,7 @@ export interface IPortfolio extends Document {
   templateId: string;
   subdomain?: string;
   deploymentUrl?: string;
+  views: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -112,6 +113,10 @@ const portfolioSchema = new Schema<IPortfolio>(
     },
     deploymentUrl: {
       type: String,
+    },
+    views: {
+      type: Number,
+      default: 0,
     },
   },
   {
