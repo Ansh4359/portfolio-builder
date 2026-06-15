@@ -14,9 +14,6 @@ interface TemplatePageProps {
   onSubdomainChange: (subdomain: string) => void;
 }
 
-const inputCls =
-  "px-3 py-2.5 border border-border rounded-sm bg-cream text-charcoal placeholder:text-muted focus:outline-none focus:border-blue-500/50 focus:ring-3 focus:ring-blue-500/15 transition-[box-shadow,border-color]";
-
 export default function TemplatePage({
   data,
   selectedTemplate,
