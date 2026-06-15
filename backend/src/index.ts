@@ -11,6 +11,7 @@ import templateRoutes from "./routes/template.js";
 import deployRoutes from "./routes/deploy.js";
 import authRoutes from "./routes/auth.js";
 import portfolioRoutes from "./routes/portfolio.js";
+import profileRoutes from "./routes/profile.js";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3001", 10);
@@ -49,6 +50,7 @@ app.use("/api/templates", templateRoutes);
 app.use("/api/deploy", deployRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolios", portfolioRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.use(
   (

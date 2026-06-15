@@ -19,20 +19,30 @@ export default function Navbar() {
         >
           Portfolio<span>Builder</span>
         </div>
-        <div className="hidden sm:flex items-center gap-6">
+        {/* <div className="hidden sm:flex items-center gap-6">
           <a href="/#templates" className="text-base text-charcoal no-underline hover:opacity-70 transition-opacity">
             Templates
           </a>
-        </div>
+        </div> */}
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <button
-                className="bg-charcoal text-cream-light px-4 py-1.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
-                onClick={() => navigate("/create")}
-              >
-                Dashboard
-              </button>
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full cursor-pointer border border-border"
+                  onClick={() => navigate("/profile")}
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div
+                  className="w-8 h-8 rounded-full bg-charcoal text-cream-light flex items-center justify-center text-sm font-semibold cursor-pointer"
+                  onClick={() => navigate("/profile")}
+                >
+                  {(user.displayName || user.email || "U")[0].toUpperCase()}
+                </div>
+              )}
               <button
                 className="border border-border-interactive text-charcoal px-4 py-1.5 rounded-sm text-sm hover:opacity-80 transition-opacity"
                 onClick={handleLogout}

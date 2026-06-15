@@ -1,15 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import SoftAurora from "../components/SoftAurora";
-
-const templates = [
-  { name: "Minimal", desc: "Clean & simple design", color: "rgba(28,28,28,0.04)" },
-  { name: "Creative", desc: "Bold & artistic", color: "rgba(28,28,28,0.06)" },
-  { name: "Professional", desc: "Corporate & polished", color: "rgba(28,28,28,0.03)" },
-  { name: "Dark Mode", desc: "Sleek dark theme", color: "rgba(28,28,28,0.08)" },
-  { name: "Gradient", desc: "Colorful & vibrant", color: "rgba(28,28,28,0.05)" },
-  { name: "Sidebar", desc: "Navigation focused", color: "rgba(28,28,28,0.04)" },
-];
+import { previews, templateList } from "../data/templateGenerators";
 
 const steps = [
   {
@@ -58,9 +50,10 @@ const stats = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const handleGetStarted = () => {
+    if (loading) return;
     navigate(user ? "/create" : "/login");
   };
 
@@ -161,12 +154,30 @@ export default function HomePage() {
             Start with a professionally designed template
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-            {templates.map((t) => (
-              <div key={t.name} className="bg-cream border border-border rounded-xl overflow-hidden hover:border-border-interactive transition-colors cursor-pointer">
-                <div className="h-[180px] w-full" style={{ background: t.color }} />
+            {templateList.map((t) => (
+              <div
+                key={t.id}
+                className="bg-cream border border-border rounded-xl overflow-hidden hover:border-border-interactive transition-colors cursor-pointer"
+                onClick={handleGetStarted}
+              >
+                <div className="h-[240px] overflow-hidden relative">
+                  <iframe
+                    srcDoc={previews[t.id]}
+                    className="absolute top-0 left-0 border-none"
+                    style={{
+                      width: "500%",
+                      height: "500%",
+                      transform: "scale(0.2)",
+                      transformOrigin: "top left",
+                      pointerEvents: "none",
+                    }}
+                    tabIndex={-1}
+                    title={t.name}
+                  />
+                </div>
                 <div className="p-4">
                   <h3 className="text-base font-normal mb-1">{t.name}</h3>
-                  <p className="text-sm text-muted">{t.desc}</p>
+                  <p className="text-sm text-muted">{t.description}</p>
                 </div>
               </div>
             ))}

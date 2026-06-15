@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { authenticateToken, requireAuth } from "../middleware/auth.js";
 import { getTemplate } from "../templates/index.js";
+import { Portfolio } from "../models/Portfolio.js";
 import {
   deployToVercel,
   sanitizeProjectName,
@@ -150,11 +151,32 @@ router.post(
         subdomain
       );
 
+      const portfolio = await Portfolio.create({
+        userId: req.user?._id,
+        name: data.name,
+        title: data.title,
+        email: data.email,
+        phone: data.phone,
+        location: data.location,
+        about: data.about,
+        skills: data.skills || [],
+        experience: data.experience || [],
+        education: data.education || [],
+        projects: data.projects || [],
+        socials: data.socials || {},
+        templateId,
+        subdomain: projectName,
+        deploymentUrl: result.url,
+      });
+
+      console.log(`[deploy] Portfolio saved to DB: ${portfolio._id}`);
+
       res.json({
         success: true,
         url: result.url,
         deploymentId: result.deploymentId,
         projectName,
+        portfolioId: portfolio._id,
       });
     } catch (err: any) {
       console.error("[deploy] error:", err);

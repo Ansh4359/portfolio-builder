@@ -1,6 +1,7 @@
 import type {
   DeployRequest,
   DeployResponse,
+  PortfolioData,
   PreviewResponse,
   Template,
 } from "./types";
@@ -73,4 +74,36 @@ export async function checkSubdomain(subdomain: string): Promise<boolean> {
   const res = await fetch(`${API_BASE}/deploy/check/${subdomain}`);
   const data = await res.json();
   return data.available;
+}
+
+export async function fetchProfile(): Promise<PortfolioData | null> {
+  const res = await fetchWithAuth(`${API_BASE}/profile`);
+  if (!res.ok) throw new Error("Failed to fetch profile");
+  return res.json();
+}
+
+export async function saveProfile(data: PortfolioData): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE}/profile`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to save profile");
+}
+
+export async function uploadResume(file: File): Promise<PortfolioData> {
+  const token = await getAuthToken();
+  const formData = new FormData();
+  formData.append("resume", file);
+
+  const res = await fetch(`${API_BASE}/profile/resume`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to parse resume");
+  }
+  return res.json();
 }

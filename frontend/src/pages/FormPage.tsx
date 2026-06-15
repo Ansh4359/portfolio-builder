@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import StepIndicator from "../components/StepIndicator";
+import { saveProfile } from "../api";
 import type { PortfolioData, Experience, Education, Project } from "../types";
 import { emptyExperience, emptyEducation, emptyProject } from "../types";
 
@@ -15,6 +17,19 @@ const inputCls =
 export default function FormPage({ data, onChange }: FormPageProps) {
   const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const handleSaveAsProfile = async () => {
+    setSavingProfile(true);
+    try {
+      await saveProfile(data);
+      toast.success("Saved as profile!");
+    } catch {
+      toast.error("Failed to save profile");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const update = (field: keyof PortfolioData, value: any) => {
     onChange({ ...data, [field]: value });
@@ -333,7 +348,13 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         <div className="flex justify-between gap-4 mt-8">
-          <div />
+          <button
+            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-sm hover:opacity-80 transition-opacity"
+            onClick={handleSaveAsProfile}
+            disabled={savingProfile}
+          >
+            {savingProfile ? "Saving..." : "Save as Profile"}
+          </button>
           <button
             className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
             disabled={!isValid}

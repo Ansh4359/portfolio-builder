@@ -89,7 +89,6 @@ export async function deployToVercel(
     name,
     files: inlineFiles,
     projectSettings: { framework: null },
-    public: true,
     target: "production",
   };
 
