@@ -197,7 +197,7 @@ export default function UpgradeModal({ open, onClose }: UpgradeModalProps) {
               </li>
             </ul>
             <button
-              className="w-full py-2.5 text-center text-sm bg-charcoal text-cream-light rounded-md shadow-btn hover:opacity-85 active:opacity-80 transition-opacity font-medium"
+              className="w-full py-2.5 text-center text-sm bg-charcoal text-cream-light rounded-md shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all font-medium"
               onClick={() => {
                 toast("Pro upgrade coming soon!");
                 onClose();

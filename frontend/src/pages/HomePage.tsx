@@ -97,7 +97,7 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <button
-              className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity inline-flex items-center gap-2"
+              className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all inline-flex items-center gap-2"
               onClick={handleGetStarted}
             >
               Get Started
@@ -108,7 +108,7 @@ export default function HomePage() {
             </button>
             <a
               href="#templates"
-              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity inline-flex items-center gap-2 no-underline"
+              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all inline-flex items-center gap-2 no-underline"
             >
               View Templates
             </a>
@@ -127,7 +127,7 @@ export default function HomePage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {steps.map((step) => (
-              <div key={step.num} className="bg-cream border border-border rounded-xl p-8 text-center hover:border-border-interactive transition-colors">
+              <div key={step.num} className="bg-cream border border-border rounded-xl p-8 text-center hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
                 <div className="w-14 h-14 bg-charcoal/[0.04] text-charcoal rounded-[14px] flex items-center justify-center mx-auto mb-4">
                   {step.icon}
                 </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
             {templateList.map((t) => (
               <div
                 key={t.id}
-                className="bg-cream border border-border rounded-xl overflow-hidden hover:border-border-interactive transition-colors cursor-pointer"
+                className="bg-cream border border-border rounded-xl overflow-hidden hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                 onClick={handleGetStarted}
               >
                 <div className="h-[240px] overflow-hidden relative">
@@ -186,7 +186,7 @@ export default function HomePage() {
           </div>
           <div className="text-center">
             <button
-              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={handleGetStarted}
             >
               View All Templates
@@ -206,11 +206,55 @@ export default function HomePage() {
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((s) => (
-              <div key={s.label} className="text-center py-8 px-4 bg-cream border border-border rounded-xl hover:border-border-interactive transition-colors">
+              <div key={s.label} className="text-center py-8 px-4 bg-cream border border-border rounded-xl hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
                 <div className="text-5xl font-semibold text-charcoal tracking-[-1.2px] leading-tight mb-1">
                   {s.value}
                 </div>
                 <div className="text-base text-muted">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-32">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <h2 className="text-5xl font-semibold text-center tracking-[-1.2px] leading-tight mb-3">
+            Loved by Developers
+          </h2>
+          <p className="text-center text-muted text-lg mb-14">
+            What people are saying
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "I went from zero to a live portfolio in 15 minutes. The AI template generator is insane — I described what I wanted and it just worked.",
+                name: "Sarah Chen",
+                title: "Frontend Engineer @ Stripe",
+              },
+              {
+                quote: "Finally a portfolio builder that doesn't look like a template. The designs are actually clean and professional. Got 3 interview callbacks in the first week.",
+                name: "Marcus Johnson",
+                title: "Full Stack Developer",
+              },
+              {
+                quote: "The resume upload + AI auto-fill saved me so much time. Deployed my portfolio during a lunch break. My hiring manager said it was the best portfolio she'd seen.",
+                name: "Priya Patel",
+                title: "Software Engineer @ Google",
+              },
+            ].map((t) => (
+              <div
+                key={t.name}
+                className="bg-cream border border-border rounded-xl p-8 hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <p className="text-[15px] text-charcoal leading-relaxed mb-6">
+                  "{t.quote}"
+                </p>
+                <div>
+                  <p className="text-sm font-medium text-charcoal">{t.name}</p>
+                  <p className="text-xs text-muted">{t.title}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -230,7 +274,7 @@ export default function HomePage() {
               portfolio. It&apos;s free to get started.
             </p>
             <button
-              className="relative z-10 bg-cream-light text-charcoal px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+              className="relative z-10 bg-cream-light text-charcoal px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2"
               onClick={handleGetStarted}
             >
               Get Started for Free

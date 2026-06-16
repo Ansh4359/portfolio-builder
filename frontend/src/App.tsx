@@ -11,6 +11,10 @@ import DeployPage from "./pages/DeployPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import FinishSignInPage from "./pages/FinishSignInPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
+import AdminPage from "./pages/AdminPage";
+import AdminRoute from "./components/AdminRoute";
+import PricingPage from "./pages/PricingPage";
 import { fetchProfile, fetchPortfolio } from "./api";
 import { emptyPortfolio } from "./types";
 import type { PortfolioData } from "./types";
@@ -106,6 +110,10 @@ function AppRoutes() {
     setIsEdit(true);
   };
 
+  const handleProfileSave = (profileData: PortfolioData) => {
+    setData(profileData);
+  };
+
   return (
     <Routes>
       <Route
@@ -126,11 +134,14 @@ function AppRoutes() {
       />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/finish-sign-in" element={<FinishSignInPage />} />
+      <Route path="/unsubscribe" element={<UnsubscribePage />} />
+      <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+      <Route path="/pricing" element={<PricingPage />} />
       <Route
         path="/profile"
         element={
           <ProtectedRoute>
-            <ProfilePage />
+            <ProfilePage onProfileSave={handleProfileSave} />
           </ProtectedRoute>
         }
       />

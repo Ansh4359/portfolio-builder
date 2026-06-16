@@ -14,13 +14,19 @@ import portfolioRoutes from "./routes/portfolio.js";
 import profileRoutes from "./routes/profile.js";
 import analyticsRoutes from "./routes/analytics.js";
 import sitemapRoutes from "./routes/sitemap.js";
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3001", 10);
 
 app.use(helmet());
-app.use(cors({ origin: "*" }));
-app.use(express.json());
+app.use(cors({
+  origin: process.env.NODE_ENV === "production"
+    ? ["https://myfolio.codes", "https://www.myfolio.codes"]
+    : ["http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+}));
+app.use(express.json({ limit: "1mb" }));
 
 // Rate limiting - more permissive for development
 if (process.env.NODE_ENV === "production") {
@@ -59,6 +65,7 @@ app.use("/api/portfolios", portfolioRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/", sitemapRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(
   (

@@ -9,10 +9,10 @@ interface TemplateCardProps {
 export default function TemplateCard({ template, selected, onSelect }: TemplateCardProps) {
   return (
     <div
-      className={`bg-cream border rounded-xl overflow-hidden cursor-pointer transition-colors ${
+      className={`bg-cream border rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
         selected
-          ? "border-charcoal"
-          : "border-border hover:border-border-interactive"
+          ? "border-charcoal shadow-card-hover"
+          : "border-border hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5"
       }`}
       onClick={onSelect}
     >

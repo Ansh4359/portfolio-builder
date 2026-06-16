@@ -45,16 +45,16 @@ export default function LoginPage() {
 
   if (linkSent) {
     return (
-      <div className="py-6 pb-[60px] flex-1">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-            <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px] text-center">
-              <div className="w-14 h-14 bg-charcoal/[0.04] text-charcoal rounded-[14px] flex items-center justify-center mx-auto mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-              </div>
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
+          <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px] text-center">
+            <div className="w-14 h-14 bg-charcoal/[0.04] text-charcoal rounded-[14px] flex items-center justify-center mx-auto mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </div>
               <h1 className="text-2xl font-semibold mb-2 tracking-[-0.5px]">
                 Check your email
               </h1>
@@ -81,7 +81,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
           <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px]">
@@ -123,7 +123,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full bg-charcoal text-cream-light px-4 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
+                className="w-full bg-charcoal text-cream-light px-4 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 {loading ? "Sending..." : "Send Magic Link"}
@@ -137,7 +137,7 @@ export default function LoginPage() {
             </div>
 
             <button
-              className="w-full bg-cream border border-border-interactive text-charcoal flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm hover:opacity-80 transition-opacity"
+              className="w-full bg-cream border border-border-interactive text-charcoal flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={handleGoogleLogin}
               disabled={loading}
             >

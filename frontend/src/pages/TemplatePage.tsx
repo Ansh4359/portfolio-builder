@@ -71,6 +71,12 @@ export default function TemplatePage({
   const [aiHistory, setAiHistory] = useState<AITemplateInfo[]>([]);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const subdomainRef = useRef<HTMLInputElement>(null);
+
+  const scrollToSubdomain = () => {
+    subdomainRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => subdomainRef.current?.focus(), 300);
+  };
 
   useEffect(() => {
     fetchTemplates().then(setTemplates).catch(console.error);
@@ -247,7 +253,7 @@ export default function TemplatePage({
   const canDeploy = selectedTemplate && (checkStatus === "available" || checkStatus === "owned");
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <StepIndicator current={2} />
         <div className="text-center mb-6">
@@ -297,7 +303,7 @@ export default function TemplatePage({
               ))}
             </div>
 
-            <SubdomainInput value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} />
+            <SubdomainInput ref={subdomainRef} value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} highlight={!!selectedTemplate && subdomain.length < 3 && !selectedTemplate.startsWith("ai-")} />
 
             {checkStatus === "checking" && (
               <div className="text-sm text-muted mt-1.5">
@@ -411,7 +417,7 @@ export default function TemplatePage({
 
               {/* Generate Button */}
               <button
-                className="mt-4 bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
+                className="mt-4 bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
                 onClick={handleGenerate}
                 disabled={
                   !prompt.trim() ||
@@ -477,7 +483,7 @@ export default function TemplatePage({
                   {aiHistory.slice(0, 5).map((t) => (
                     <div
                       key={t._id}
-                      className="flex items-center justify-between p-3 border border-border rounded-sm hover:border-border-interactive transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-3 border border-border rounded-sm hover:border-border-interactive hover:shadow-card-hover transition-all duration-200 cursor-pointer"
                       onClick={() => handleLoadHistoryTemplate(t._id)}
                     >
                       <div className="flex-1 min-w-0">
@@ -497,7 +503,7 @@ export default function TemplatePage({
               </div>
             )}
 
-            <SubdomainInput value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} />
+            <SubdomainInput ref={subdomainRef} value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} highlight={!!selectedTemplate && subdomain.length < 3 && selectedTemplate.startsWith("ai-")} />
 
             {checkStatus === "checking" && (
               <div className="text-sm text-muted mt-1.5">
@@ -524,15 +530,21 @@ export default function TemplatePage({
 
         <div className="flex justify-between gap-4 mt-8">
           <button
-            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
             onClick={() => navigate("/create")}
           >
             ← Back to Info
           </button>
           <button
-            className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
-            disabled={!canDeploy}
-            onClick={() => navigate("/deploy", { state: { isEdit: checkStatus === "owned" } })}
+            className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
+            disabled={checkStatus === "idle" && !selectedTemplate}
+            onClick={() => {
+              if (checkStatus === "idle" || checkStatus === "taken") {
+                scrollToSubdomain();
+              } else {
+                navigate("/deploy", { state: { isEdit: checkStatus === "owned" } });
+              }
+            }}
           >
             {checkStatus === "owned"
               ? "Update Portfolio →"

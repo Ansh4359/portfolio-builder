@@ -9,6 +9,10 @@ export interface IUser extends Document {
   tierUpdatedAt?: Date;
   portfoliosLimit: number;
   deploymentsLimit: number;
+  emailPreferences: {
+    milestones: boolean;
+    marketing: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +51,10 @@ const userSchema = new Schema<IUser>(
     deploymentsLimit: {
       type: Number,
       default: 3,
+    },
+    emailPreferences: {
+      milestones: { type: Boolean, default: true },
+      marketing: { type: Boolean, default: true },
     },
   },
   {

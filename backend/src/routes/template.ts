@@ -172,11 +172,7 @@ router.get(
   requireAuth,
   async (req: Request, res: Response) => {
     try {
-      const user = await User.findById(req.user?._id);
-      if (!user) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
+      const user = req.user!;
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);

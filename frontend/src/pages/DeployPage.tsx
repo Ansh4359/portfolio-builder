@@ -53,7 +53,7 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
   };
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <StepIndicator current={3} />
 
@@ -81,13 +81,13 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
             </div>
             <div className="mt-6 flex gap-3 justify-center">
               <button
-                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
                 onClick={() => navigate("/template")}
               >
                 ← Back
               </button>
               <button
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
                 onClick={handleDeploy}
               >
                 {isEdit ? "Update Now" : "Deploy Now"}
@@ -135,12 +135,12 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 transition-opacity no-underline inline-flex items-center"
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all no-underline inline-flex items-center"
               >
                 View Site →
               </a>
               <button
-                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
                 onClick={() => navigate("/")}
               >
                 {isEdit ? "Back to Dashboard" : "Create Another"}
@@ -161,13 +161,13 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
             <p className="text-muted mt-2 max-w-[400px] mx-auto">{errorMsg}</p>
             <div className="mt-6 flex gap-3 justify-center">
               <button
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
                 onClick={handleDeploy}
               >
                 Retry
               </button>
               <button
-                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+                className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
                 onClick={() => navigate("/template")}
               >
                 Change Subdomain

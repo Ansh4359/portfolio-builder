@@ -22,17 +22,14 @@ export default function DashboardPage() {
       } catch (err) {
         console.error("Failed to fetch profile:", err);
       }
-
       try {
         const data = await fetchPortfolios();
         setPortfolios(data);
       } catch (err) {
         console.error("Failed to fetch portfolios:", err);
       }
-
       setLoading(false);
     };
-
     loadData();
   }, []);
 
@@ -52,6 +49,35 @@ export default function DashboardPage() {
   };
 
   const completion = getProfileCompletion();
+  const hasTemplate = portfolios.some((p) => p.templateId);
+  const hasDeployed = portfolios.some((p) => p.deploymentUrl);
+  const hasProfile = completion >= 50;
+
+  const getStepStatus = (step: number) => {
+    if (step === 1) {
+      if (completion === 0) return { label: "Not Started", color: "bg-charcoal/[0.04] text-muted" };
+      if (completion < 100) return { label: "In Progress", color: "bg-amber-bg text-amber border border-amber/20" };
+      return { label: "Complete", color: "bg-success-bg text-success border border-success/20" };
+    }
+    if (step === 2) {
+      if (!hasProfile) return { label: "Not Started", color: "bg-charcoal/[0.04] text-muted" };
+      if (hasTemplate) return { label: "Complete", color: "bg-success-bg text-success border border-success/20" };
+      return { label: "In Progress", color: "bg-amber-bg text-amber border border-amber/20" };
+    }
+    if (step === 3) {
+      if (!hasTemplate) return { label: "Not Started", color: "bg-charcoal/[0.04] text-muted" };
+      if (hasDeployed) return { label: "Complete", color: "bg-success-bg text-success border border-success/20" };
+      return { label: "In Progress", color: "bg-amber-bg text-amber border border-amber/20" };
+    }
+    return { label: "Not Started", color: "bg-charcoal/[0.04] text-muted" };
+  };
+
+  const step1 = getStepStatus(1);
+  const step2 = getStepStatus(2);
+  const step3 = getStepStatus(3);
+
+  const showChecklist = !localStorage.getItem("onboarding-dismissed") && completion < 100;
+  const handleDismissChecklist = () => localStorage.setItem("onboarding-dismissed", "true");
 
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,7 +86,6 @@ export default function DashboardPage() {
       toast.error("File too large (max 5MB)");
       return;
     }
-
     setUploading(true);
     try {
       const data = await uploadResume(file);
@@ -76,11 +101,50 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="py-6 pb-[60px] flex-1">
+      <div className="py-8 pb-[60px] flex-1 animate-fade-in">
         <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-            <div className="w-10 h-10 border-3 border-border border-t-charcoal rounded-full animate-spin" />
-            <p className="text-muted">Loading your dashboard...</p>
+          <div className="mb-8">
+            <div className="skeleton h-8 w-64 mb-3" />
+            <div className="skeleton h-4 w-48" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-cream border border-border rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="skeleton w-8 h-8 rounded-full" />
+                    <div className="skeleton h-4 w-16" />
+                  </div>
+                  <div className="skeleton h-5 w-10 rounded-full" />
+                </div>
+                <div className="skeleton h-2 w-full rounded-full mb-4" />
+                <div className="skeleton h-3 w-3/4 mb-4" />
+                <div className="skeleton h-9 w-28" />
+              </div>
+            ))}
+          </div>
+          <div className="bg-cream border border-border rounded-xl p-6 mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex-1">
+                <div className="skeleton h-5 w-40 mb-2" />
+                <div className="skeleton h-3 w-64" />
+              </div>
+              <div className="skeleton h-9 w-32" />
+            </div>
+          </div>
+          <div className="bg-cream border border-border rounded-xl p-6">
+            <div className="skeleton h-5 w-32 mb-5" />
+            <div className="space-y-3">
+              {[1, 2].map((i) => (
+                <div key={i} className="flex items-center justify-between p-4 border border-border rounded-sm">
+                  <div>
+                    <div className="skeleton h-4 w-32 mb-2" />
+                    <div className="skeleton h-3 w-48" />
+                  </div>
+                  <div className="skeleton h-8 w-12" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -88,7 +152,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="py-8 pb-[60px] flex-1">
+    <div className="py-8 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Welcome */}
         <div className="mb-8">
@@ -98,10 +162,57 @@ export default function DashboardPage() {
           <p className="text-muted">Build and deploy your portfolio in minutes.</p>
         </div>
 
+        {/* Onboarding Checklist */}
+        {showChecklist && (
+          <div className="bg-cream border border-border rounded-xl p-6 mb-8 animate-slide-up">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-charcoal">Getting Started</h3>
+              <button
+                className="text-xs text-muted hover:text-charcoal transition-colors"
+                onClick={handleDismissChecklist}
+              >
+                Dismiss
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                  completion >= 50 ? "bg-success text-white" : "border border-border"
+                }`}>
+                  {completion >= 50 && "✓"}
+                </div>
+                <span className={`text-sm ${completion >= 50 ? "text-muted line-through" : "text-charcoal"}`}>
+                  Create your profile with your details
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                  hasTemplate ? "bg-success text-white" : "border border-border"
+                }`}>
+                  {hasTemplate && "✓"}
+                </div>
+                <span className={`text-sm ${hasTemplate ? "text-muted line-through" : "text-charcoal"}`}>
+                  Choose a template or generate one with AI
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                  hasDeployed ? "bg-success text-white" : "border border-border"
+                }`}>
+                  {hasDeployed && "✓"}
+                </div>
+                <span className={`text-sm ${hasDeployed ? "text-muted line-through" : "text-charcoal"}`}>
+                  Deploy your portfolio to a custom subdomain
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Progress Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           {/* Step 1: Profile */}
-          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive transition-colors">
+          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div
@@ -141,7 +252,7 @@ export default function DashboardPage() {
                     : "Your profile is complete!"}
             </p>
             <button
-              className="bg-charcoal text-cream-light px-4 py-2 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
+              className="bg-charcoal text-cream-light px-4 py-2 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
               onClick={() => navigate("/profile")}
             >
               {completion === 0 ? "Create Profile" : "Edit Profile"}
@@ -149,23 +260,25 @@ export default function DashboardPage() {
           </div>
 
           {/* Step 2: Template */}
-          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive transition-colors">
+          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-charcoal/[0.04] text-muted flex items-center justify-center text-sm font-semibold">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  step2.label === "Complete" ? "bg-charcoal text-cream-light" : "bg-charcoal/[0.04] text-muted"
+                }`}>
                   2
                 </div>
                 <span className="text-base font-medium text-charcoal">Template</span>
               </div>
-              <span className="text-xs px-2 py-1 bg-charcoal/[0.04] text-muted rounded-full">
-                Pending
+              <span className={`text-xs px-2 py-1 rounded-full ${step2.color}`}>
+                {step2.label}
               </span>
             </div>
             <p className="text-sm text-muted mb-4">
               Choose from professionally designed templates and customize your portfolio.
             </p>
             <button
-              className="border border-border-interactive text-charcoal px-4 py-2 rounded-sm text-sm hover:opacity-80 transition-opacity"
+              className="border border-border-interactive text-charcoal px-4 py-2 rounded-sm text-sm hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={() => navigate("/template")}
             >
               Choose Template
@@ -173,23 +286,25 @@ export default function DashboardPage() {
           </div>
 
           {/* Step 3: Deploy */}
-          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive transition-colors">
+          <div className="bg-cream border border-border rounded-xl p-6 hover:border-border-interactive hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-charcoal/[0.04] text-muted flex items-center justify-center text-sm font-semibold">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  step3.label === "Complete" ? "bg-charcoal text-cream-light" : "bg-charcoal/[0.04] text-muted"
+                }`}>
                   3
                 </div>
                 <span className="text-base font-medium text-charcoal">Deploy</span>
               </div>
-              <span className="text-xs px-2 py-1 bg-charcoal/[0.04] text-muted rounded-full">
-                Pending
+              <span className={`text-xs px-2 py-1 rounded-full ${step3.color}`}>
+                {step3.label}
               </span>
             </div>
             <p className="text-sm text-muted mb-4">
               One click to deploy your portfolio to a custom subdomain.
             </p>
             <button
-              className="border border-border-interactive text-charcoal px-4 py-2 rounded-sm text-sm hover:opacity-80 transition-opacity"
+              className="border border-border-interactive text-charcoal px-4 py-2 rounded-sm text-sm hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={() => navigate("/template")}
             >
               Start Building
@@ -198,7 +313,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Resume Upload Banner */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-8">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-8 hover:border-border-interactive transition-colors duration-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
               <h3 className="text-base font-semibold text-charcoal mb-1">
@@ -218,7 +333,7 @@ export default function DashboardPage() {
               />
               <label
                 htmlFor="dashboard-resume-upload"
-                className="bg-charcoal text-cream-light px-4 py-2 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 transition-opacity cursor-pointer inline-block"
+                className="bg-charcoal text-cream-light px-4 py-2 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all cursor-pointer inline-block"
               >
                 {uploading ? "Parsing..." : "Upload Resume"}
               </label>
@@ -249,10 +364,18 @@ export default function DashboardPage() {
             Your Portfolios
           </h2>
           {portfolios.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted mb-4">You haven't created any portfolios yet.</p>
+            <div className="text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 bg-charcoal/[0.04] rounded-2xl flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18" />
+                  <path d="M9 21V9" />
+                </svg>
+              </div>
+              <p className="text-charcoal font-medium mb-1">No portfolios yet</p>
+              <p className="text-muted text-sm mb-5">Create your first portfolio to get started.</p>
               <button
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
                 onClick={() => navigate("/create")}
               >
                 Create Your First Portfolio
@@ -263,7 +386,7 @@ export default function DashboardPage() {
               {portfolios.map((p) => (
                 <div
                   key={p._id}
-                  className="flex items-center justify-between p-4 border border-border rounded-sm hover:border-border-interactive transition-colors"
+                  className="flex items-center justify-between p-4 border border-border rounded-sm hover:border-border-interactive hover:shadow-card-hover transition-all duration-200"
                 >
                   <div>
                     <p className="font-medium text-charcoal">{p.name}</p>
@@ -301,7 +424,7 @@ export default function DashboardPage() {
                       {new Date(p.updatedAt).toLocaleDateString()}
                     </span>
                     <button
-                      className="text-xs px-3 py-1.5 border border-border-interactive text-charcoal rounded-sm hover:opacity-80 transition-opacity"
+                      className="text-xs px-3 py-1.5 border border-border-interactive text-charcoal rounded-sm hover:opacity-80 active:scale-[0.98] transition-all"
                       onClick={() => navigate(`/portfolio/${p._id}/edit`)}
                     >
                       Edit

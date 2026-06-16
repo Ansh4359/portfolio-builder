@@ -49,7 +49,7 @@ export default function FinishSignInPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen animate-fade-in">
         <div className="text-center">
           <div className="w-10 h-10 border-3 border-border border-t-charcoal rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted text-[15px]">Completing sign-in...</p>
@@ -60,7 +60,7 @@ export default function FinishSignInPage() {
 
   if (status === "email-prompt") {
     return (
-      <div className="py-6 pb-[60px] flex-1">
+      <div className="py-6 pb-[60px] flex-1 animate-fade-in">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
             <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px]">
@@ -85,7 +85,7 @@ export default function FinishSignInPage() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-charcoal text-cream-light px-4 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
+                  className="w-full bg-charcoal text-cream-light px-4 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
                 >
                   Complete Sign In
                 </button>
@@ -98,13 +98,13 @@ export default function FinishSignInPage() {
   }
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
           <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px] text-center">
             <p className="text-error mb-4">{errorMsg}</p>
             <button
-              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={() => navigate("/login")}
             >
               Back to Login

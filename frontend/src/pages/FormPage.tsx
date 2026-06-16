@@ -105,7 +105,7 @@ export default function FormPage({ data, onChange }: FormPageProps) {
     data.about.trim();
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <StepIndicator current={1} />
         <div className="text-center mb-8">
@@ -114,16 +114,18 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         {/* Personal Info */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm text-charcoal">Full Name *</label>
               <input className={inputCls} value={data.name} onChange={(e) => update("name", e.target.value)} placeholder="Jane Doe" />
+              <p className="text-xs text-muted">Displayed as the main heading on your portfolio</p>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm text-charcoal">Title *</label>
               <input className={inputCls} value={data.title} onChange={(e) => update("title", e.target.value)} placeholder="Full Stack Developer" />
+              <p className="text-xs text-muted">Your professional headline, e.g. "Frontend Engineer"</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -149,11 +151,12 @@ export default function FormPage({ data, onChange }: FormPageProps) {
               placeholder="Write a short bio about yourself..."
               rows={3}
             />
+            <p className="text-xs text-muted">A brief introduction that appears on your portfolio's about section</p>
           </div>
         </div>
 
         {/* Skills */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Skills</h2>
           <div className="flex flex-wrap gap-2 p-2 border border-border rounded-sm bg-cream min-h-[44px] items-center focus-within:border-blue-500/50 focus-within:ring-3 focus-within:ring-blue-500/15 transition-[box-shadow,border-color]">
             {data.skills.map((skill) => (
@@ -178,7 +181,7 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         {/* Experience */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Experience</h2>
           {data.experience.map((exp, i) => (
             <div key={i} className="bg-cream border border-border rounded-sm p-4 mb-3">
@@ -220,7 +223,7 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         {/* Education */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Education</h2>
           {data.education.map((edu, i) => (
             <div key={i} className="bg-cream border border-border rounded-sm p-4 mb-3">
@@ -258,7 +261,7 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         {/* Projects */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Projects</h2>
           {data.projects.map((proj, i) => (
             <div key={i} className="bg-cream border border-border rounded-sm p-4 mb-3">
@@ -323,7 +326,7 @@ export default function FormPage({ data, onChange }: FormPageProps) {
         </div>
 
         {/* Socials */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">Social Links</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col gap-1.5">
@@ -349,14 +352,14 @@ export default function FormPage({ data, onChange }: FormPageProps) {
 
         <div className="flex justify-between gap-4 mt-8">
           <button
-            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-sm hover:opacity-80 transition-opacity"
+            className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-sm hover:opacity-80 active:scale-[0.98] transition-all"
             onClick={handleSaveAsProfile}
             disabled={savingProfile}
           >
             {savingProfile ? "Saving..." : "Save as Profile"}
           </button>
           <button
-            className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
+            className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
             disabled={!isValid}
             onClick={() => navigate("/template")}
           >

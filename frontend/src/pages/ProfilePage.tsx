@@ -8,7 +8,11 @@ import { emptyPortfolio, emptyExperience, emptyEducation, emptyProject } from ".
 const inputCls =
   "px-3 py-2.5 border border-border rounded-sm bg-cream text-charcoal placeholder:text-muted focus:outline-none focus:border-blue-500/50 focus:ring-3 focus:ring-blue-500/15 transition-[box-shadow,border-color]";
 
-export default function ProfilePage() {
+interface ProfilePageProps {
+  onProfileSave?: (data: PortfolioData) => void;
+}
+
+export default function ProfilePage({ onProfileSave }: ProfilePageProps) {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<PortfolioData | null>(null);
@@ -110,7 +114,9 @@ export default function ProfilePage() {
       setProfile(editData);
       setEditing(false);
       setParsed(false);
+      onProfileSave?.(editData);
       toast.success("Profile saved!");
+      navigate("/template");
     } catch {
       toast.error("Failed to save profile");
     } finally {
@@ -146,11 +152,32 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="py-6 pb-[60px] flex-1">
+      <div className="py-6 pb-[60px] flex-1 animate-fade-in">
         <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-            <div className="w-10 h-10 border-3 border-border border-t-charcoal rounded-full animate-spin" />
-            <p className="text-muted">Loading profile...</p>
+          <div className="text-center mb-6">
+            <div className="skeleton h-8 w-40 mx-auto mb-2" />
+            <div className="skeleton h-4 w-48 mx-auto" />
+          </div>
+          <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+            <div className="skeleton h-5 w-32 mb-5" />
+            <div className="flex items-center gap-4">
+              <div className="skeleton h-9 w-28" />
+              <div className="skeleton h-4 w-32" />
+            </div>
+          </div>
+          <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+            <div className="flex justify-between items-center mb-5 pb-3 border-b border-border">
+              <div className="skeleton h-5 w-28" />
+              <div className="skeleton h-8 w-16" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i}>
+                  <div className="skeleton h-3 w-16 mb-2" />
+                  <div className="skeleton h-4 w-full" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -158,7 +185,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="py-6 pb-[60px] flex-1">
+    <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="text-center mb-6">
           <h1 className="text-[28px] font-semibold mb-2 tracking-[-0.5px]">Your Profile</h1>
@@ -166,7 +193,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Resume Upload Section */}
-        <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+        <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
           <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">
             Upload Resume (Optional)
           </h2>
@@ -183,7 +210,7 @@ export default function ProfilePage() {
               className="hidden"
             />
             <button
-              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-sm hover:opacity-80 transition-opacity"
+              className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-sm hover:opacity-80 active:scale-[0.98] transition-all"
               onClick={() => fileRef.current?.click()}
               disabled={parsing}
             >
@@ -202,11 +229,11 @@ export default function ProfilePage() {
         {/* Profile View / Edit */}
         {!editing && profile ? (
           /* Read-only view */
-          <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+          <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
             <div className="flex justify-between items-center mb-5 pb-3 border-b border-border">
               <h2 className="text-lg font-semibold">Profile Details</h2>
               <button
-                className="bg-charcoal text-cream-light px-4 py-1.5 rounded-sm text-sm shadow-btn hover:opacity-85 transition-opacity"
+                className="bg-charcoal text-cream-light px-4 py-1.5 rounded-sm text-sm shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
                 onClick={() => setEditing(true)}
               >
                 Edit
@@ -251,16 +278,16 @@ export default function ProfilePage() {
             )}
             <div className="flex gap-3 mt-6">
               <button
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 transition-opacity"
-                onClick={() => navigate("/create")}
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all"
+                onClick={() => navigate("/template")}
               >
-                Create Portfolio
+                Choose Template
               </button>
             </div>
           </div>
         ) : (
           /* Edit form */
-          <div className="bg-cream border border-border rounded-xl p-6 mb-5">
+          <div className="bg-cream border border-border rounded-xl p-6 mb-5 hover:border-border-interactive hover:shadow-card-hover transition-all duration-200">
             <h2 className="text-lg font-semibold mb-5 pb-3 border-b border-border">
               {parsed ? "Review Parsed Data" : "Edit Profile"}
             </h2>
@@ -438,7 +465,7 @@ export default function ProfilePage() {
             {/* Save / Cancel */}
             <div className="flex gap-3 mt-6">
               <button
-                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
+                className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 active:scale-[0.98] transition-all disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
                 onClick={handleSave}
                 disabled={saving}
               >
@@ -446,7 +473,7 @@ export default function ProfilePage() {
               </button>
               {profile && (
                 <button
-                  className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
+                  className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 active:scale-[0.98] transition-all"
                   onClick={() => {
                     setEditing(false);
                     setParsed(false);
