@@ -20,12 +20,7 @@ const app = express();
 const port = parseInt(process.env.PORT || "3001", 10);
 
 app.use(helmet());
-app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? ["https://myfolio.codes", "https://www.myfolio.codes"]
-    : ["http://localhost:5173", "http://localhost:3000"],
-  credentials: true,
-}));
+app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "1mb" }));
 
 // Rate limiting - more permissive for development
