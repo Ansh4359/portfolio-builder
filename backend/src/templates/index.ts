@@ -1,12 +1,12 @@
 import type { PortfolioData } from "../types";
-import { generateMinimal } from "./minimal";
-import { generateCreative } from "./creative";
-import { generateDeveloper } from "./developer";
-import { generateModern } from "./modern";
-import { generateElegant } from "./elegant";
-import { generateGlass } from "./glass";
-import { generateMono } from "./mono";
-import { generateSunset } from "./sunset";
+import { generateMinimal } from "./minimal.js";
+import { generateCreative } from "./creative.js";
+import { generateDeveloper } from "./developer.js";
+import { generateModern } from "./modern.js";
+import { generateElegant } from "./elegant.js";
+import { generateGlass } from "./glass.js";
+import { generateMono } from "./mono.js";
+import { generateSunset } from "./sunset.js";
 
 export interface Template {
   id: string;
