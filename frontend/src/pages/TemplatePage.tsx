@@ -101,11 +101,24 @@ export default function TemplatePage({
     }
   }, [selectedTemplate, mode]);
 
+  // Pre-set checkStatus to "owned" when editing
+  useEffect(() => {
+    if (isEdit && subdomain.length >= 3) {
+      setCheckStatus("owned");
+    }
+  }, [isEdit, subdomain]);
+
   useEffect(() => {
     clearTimeout(timerRef.current);
 
     if (subdomain.length < 3) {
       setCheckStatus("idle");
+      return;
+    }
+
+    // Skip API call when editing (already know we own it)
+    if (isEdit) {
+      setCheckStatus("owned");
       return;
     }
 
