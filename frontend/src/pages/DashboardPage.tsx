@@ -72,7 +72,6 @@ export default function DashboardPage() {
     return { label: "Not Started", color: "bg-charcoal/[0.04] text-muted" };
   };
 
-  const step1 = getStepStatus(1);
   const step2 = getStepStatus(2);
   const step3 = getStepStatus(3);
 

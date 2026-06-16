@@ -250,8 +250,6 @@ export default function TemplatePage({
     }
   };
 
-  const canDeploy = selectedTemplate && (checkStatus === "available" || checkStatus === "owned");
-
   return (
     <div className="py-6 pb-[60px] flex-1 animate-fade-in">
       <div className="max-w-[1200px] mx-auto px-6">
