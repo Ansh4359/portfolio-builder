@@ -66,10 +66,10 @@ export default function HomePage() {
         <div className="absolute inset-0 overflow-hidden">
           <SoftAurora
             speed={0.4}
-            scale={1.2}
-            brightness={theme === "dark" ? 0.6 : 0.8}
-            color1={theme === "dark" ? "#141413" : "#f7f4ed"}
-            color2={theme === "dark" ? "#6d5a9e" : "#c4b5fd"}
+            scale={theme === "dark" ? 1.4 : 1.2}
+            brightness={theme === "dark" ? 1.2 : 0.8}
+            color1={theme === "dark" ? "#e8e0f0" : "#f7f4ed"}
+            color2={theme === "dark" ? "#a78bfa" : "#c4b5fd"}
             noiseFrequency={2.0}
             noiseAmplitude={0.8}
             bandHeight={0.6}

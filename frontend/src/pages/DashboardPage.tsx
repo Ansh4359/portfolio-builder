@@ -2,19 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
-import { fetchProfile, uploadResume } from "../api";
-import { auth } from "../config/firebase";
-import type { PortfolioData } from "../types";
-
-interface Portfolio {
-  _id: string;
-  name: string;
-  templateId: string;
-  subdomain?: string;
-  deploymentUrl?: string;
-  updatedAt: string;
-  views?: number;
-}
+import { fetchProfile, fetchPortfolios, uploadResume } from "../api";
+import type { PortfolioData, Portfolio } from "../types";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -35,20 +24,8 @@ export default function DashboardPage() {
       }
 
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const API_BASE =
-          import.meta.env.VITE_API_BASE || "http://localhost:3001/api";
-        const res = await fetch(`${API_BASE}/portfolios`, {
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : {},
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setPortfolios(data);
-        } else {
-          console.error("Failed to fetch portfolios:", res.status, res.statusText);
-        }
+        const data = await fetchPortfolios();
+        setPortfolios(data);
       } catch (err) {
         console.error("Failed to fetch portfolios:", err);
       }
@@ -298,7 +275,7 @@ export default function DashboardPage() {
                           rel="noopener noreferrer"
                           className="text-charcoal underline hover:opacity-70 transition-opacity"
                         >
-                          {p.subdomain}.vercel.app
+                          {p.subdomain}.myfolio.codes
                         </a>
                       ) : (
                         "Not deployed yet"
@@ -323,6 +300,12 @@ export default function DashboardPage() {
                     <span className="text-xs text-muted">
                       {new Date(p.updatedAt).toLocaleDateString()}
                     </span>
+                    <button
+                      className="text-xs px-3 py-1.5 border border-border-interactive text-charcoal rounded-sm hover:opacity-80 transition-opacity"
+                      onClick={() => navigate(`/portfolio/${p._id}/edit`)}
+                    >
+                      Edit
+                    </button>
                   </div>
                 </div>
               ))}

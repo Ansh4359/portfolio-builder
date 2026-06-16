@@ -42,6 +42,7 @@ interface TemplatePageProps {
   subdomain: string;
   onTemplateChange: (id: string) => void;
   onSubdomainChange: (subdomain: string) => void;
+  isEdit?: boolean;
 }
 
 export default function TemplatePage({
@@ -50,12 +51,13 @@ export default function TemplatePage({
   subdomain,
   onTemplateChange,
   onSubdomainChange,
+  isEdit,
 }: TemplatePageProps) {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [previewHtml, setPreviewHtml] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [checkStatus, setCheckStatus] = useState<"idle" | "checking" | "available" | "taken" | "owned">("idle");
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // AI Template Builder state
@@ -110,8 +112,12 @@ export default function TemplatePage({
     setCheckStatus("checking");
     timerRef.current = setTimeout(async () => {
       try {
-        const available = await checkSubdomain(subdomain);
-        setCheckStatus(available ? "available" : "taken");
+        const result = await checkSubdomain(subdomain);
+        if (result.owned) {
+          setCheckStatus("owned");
+        } else {
+          setCheckStatus(result.available ? "available" : "taken");
+        }
       } catch {
         setCheckStatus("idle");
       }
@@ -225,7 +231,7 @@ export default function TemplatePage({
     }
   };
 
-  const canDeploy = selectedTemplate && checkStatus === "available";
+  const canDeploy = selectedTemplate && (checkStatus === "available" || checkStatus === "owned");
 
   return (
     <div className="py-6 pb-[60px] flex-1">
@@ -278,7 +284,7 @@ export default function TemplatePage({
               ))}
             </div>
 
-            <SubdomainInput value={subdomain} onChange={onSubdomainChange} />
+            <SubdomainInput value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} />
 
             {checkStatus === "checking" && (
               <div className="text-sm text-muted mt-1.5">
@@ -287,7 +293,12 @@ export default function TemplatePage({
             )}
             {checkStatus === "available" && (
               <div className="text-sm text-success mt-1.5">
-                ✓ Available — your site will be at https://{subdomain}.vercel.app
+                ✓ Available — your site will be at https://{subdomain}.myfolio.codes
+              </div>
+            )}
+            {checkStatus === "owned" && (
+              <div className="text-sm text-success mt-1.5">
+                ✓ Your subdomain — https://{subdomain}.myfolio.codes will be updated
               </div>
             )}
             {checkStatus === "taken" && (
@@ -473,7 +484,7 @@ export default function TemplatePage({
               </div>
             )}
 
-            <SubdomainInput value={subdomain} onChange={onSubdomainChange} />
+            <SubdomainInput value={subdomain} onChange={onSubdomainChange} disabled={checkStatus === "owned"} />
 
             {checkStatus === "checking" && (
               <div className="text-sm text-muted mt-1.5">
@@ -482,7 +493,12 @@ export default function TemplatePage({
             )}
             {checkStatus === "available" && (
               <div className="text-sm text-success mt-1.5">
-                ✓ Available — your site will be at https://{subdomain}.vercel.app
+                ✓ Available — your site will be at https://{subdomain}.myfolio.codes
+              </div>
+            )}
+            {checkStatus === "owned" && (
+              <div className="text-sm text-success mt-1.5">
+                ✓ Your subdomain — https://{subdomain}.myfolio.codes will be updated
               </div>
             )}
             {checkStatus === "taken" && (
@@ -503,13 +519,15 @@ export default function TemplatePage({
           <button
             className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
             disabled={!canDeploy}
-            onClick={() => navigate("/deploy")}
+            onClick={() => navigate("/deploy", { state: { isEdit: checkStatus === "owned" } })}
           >
-            {checkStatus === "available"
-              ? "Deploy Now →"
-              : checkStatus === "checking"
-                ? "Checking..."
-                : "Enter Subdomain"}
+            {checkStatus === "owned"
+              ? "Update Portfolio →"
+              : checkStatus === "available"
+                ? "Deploy Now →"
+                : checkStatus === "checking"
+                  ? "Checking..."
+                  : "Enter Subdomain"}
           </button>
         </div>
       </div>

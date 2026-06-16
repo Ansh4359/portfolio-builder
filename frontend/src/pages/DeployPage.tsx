@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import StepIndicator from "../components/StepIndicator";
 import { deployPortfolio } from "../api";
@@ -18,6 +18,8 @@ const inputCls =
 
 export default function DeployPage({ data, selectedTemplate, subdomain }: DeployPageProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isEdit = (location.state as { isEdit?: boolean })?.isEdit ?? false;
   const [state, setState] = useState<DeployState>("confirm");
   const [url, setUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -37,11 +39,11 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
       });
       setUrl(res.url);
       setState("success");
-      toast.success("Portfolio deployed!");
+      toast.success(isEdit ? "Portfolio updated!" : "Portfolio deployed!");
     } catch (err: any) {
       setErrorMsg(err.message);
       setState("error");
-      toast.error("Deployment failed");
+      toast.error(isEdit ? "Update failed" : "Deployment failed");
     }
   };
 
@@ -58,10 +60,16 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
         {/* Confirm */}
         {state === "confirm" && (
           <div className="text-center p-10">
-            <h2 className="text-xl font-semibold mb-2">Ready to deploy</h2>
-            <p className="text-muted mt-2">Your portfolio will be live at:</p>
+            <h2 className="text-xl font-semibold mb-2">
+              {isEdit ? "Ready to update" : "Ready to deploy"}
+            </h2>
+            <p className="text-muted mt-2">
+              {isEdit
+                ? "Your portfolio will be updated at:"
+                : "Your portfolio will be live at:"}
+            </p>
             <div className="flex items-center gap-2 bg-cream border border-border rounded-sm p-3 mx-auto max-w-[500px] mt-4">
-              <input className={inputCls} value={`https://${subdomain}.vercel.app`} readOnly />
+              <input className={inputCls} value={`https://${subdomain}.myfolio.codes`} readOnly />
             </div>
             <div className="mt-6 bg-cream border border-border rounded-sm p-4 text-left max-w-[400px] mx-auto">
               <p className="text-sm text-muted mb-2">
@@ -82,7 +90,7 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
                 className="bg-charcoal text-cream-light px-5 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity"
                 onClick={handleDeploy}
               >
-                Deploy Now
+                {isEdit ? "Update Now" : "Deploy Now"}
               </button>
             </div>
           </div>
@@ -92,8 +100,10 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
         {state === "deploying" && (
           <div className="text-center py-[60px] px-5">
             <div className="w-12 h-12 border-3 border-border border-t-charcoal rounded-full animate-spin mx-auto mb-6" />
-            <h2 className="text-xl font-semibold">Deploying your portfolio...</h2>
-            <p className="text-muted mt-2">Setting up {subdomain}.vercel.app</p>
+            <h2 className="text-xl font-semibold">
+              {isEdit ? "Updating your portfolio..." : "Deploying your portfolio..."}
+            </h2>
+            <p className="text-muted mt-2">Setting up {subdomain}.myfolio.codes</p>
           </div>
         )}
 
@@ -103,8 +113,14 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
             <div className="w-16 h-16 bg-success-bg text-success rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
               ✓
             </div>
-            <h2 className="text-xl font-semibold">Your portfolio is live!</h2>
-            <p className="text-muted mt-2">Your site is now accessible to anyone</p>
+            <h2 className="text-xl font-semibold">
+              {isEdit ? "Your portfolio has been updated!" : "Your portfolio is live!"}
+            </h2>
+            <p className="text-muted mt-2">
+              {isEdit
+                ? "Your changes are now live"
+                : "Your site is now accessible to anyone"}
+            </p>
             <div className="flex items-center gap-2 bg-cream border border-border rounded-sm p-3 mx-auto max-w-[500px] mt-4">
               <input className={inputCls} value={url} readOnly />
               <button
@@ -127,7 +143,7 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
                 className="border border-border-interactive text-charcoal px-5 py-2.5 rounded-sm text-base hover:opacity-80 transition-opacity"
                 onClick={() => navigate("/")}
               >
-                Create Another
+                {isEdit ? "Back to Dashboard" : "Create Another"}
               </button>
             </div>
           </div>
@@ -139,7 +155,9 @@ export default function DeployPage({ data, selectedTemplate, subdomain }: Deploy
             <div className="w-16 h-16 bg-error-bg text-error rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
               ✗
             </div>
-            <h2 className="text-xl font-semibold">Deployment failed</h2>
+            <h2 className="text-xl font-semibold">
+              {isEdit ? "Update failed" : "Deployment failed"}
+            </h2>
             <p className="text-muted mt-2 max-w-[400px] mx-auto">{errorMsg}</p>
             <div className="mt-6 flex gap-3 justify-center">
               <button

@@ -15,7 +15,7 @@ router.get("/sitemap.xml", async (_req: Request, res: Response) => {
     const urls = portfolios
       .map(
         (p) => `  <url>
-    <loc>https://${p.subdomain}.vercel.app</loc>
+    <loc>https://${p.subdomain}.myfolio.codes</loc>
     <lastmod>${p.updatedAt.toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -26,7 +26,7 @@ router.get("/sitemap.xml", async (_req: Request, res: Response) => {
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://foliobuilder.com</loc>
+    <loc>https://myfolio.codes</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

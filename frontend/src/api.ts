@@ -5,7 +5,9 @@ import type {
   DeployRequest,
   DeployResponse,
   PortfolioData,
+  Portfolio,
   PreviewResponse,
+  SubdomainCheck,
   Template,
 } from "./types";
 import { auth } from "./config/firebase";
@@ -73,10 +75,10 @@ export async function deployPortfolio(
   return result;
 }
 
-export async function checkSubdomain(subdomain: string): Promise<boolean> {
-  const res = await fetch(`${API_BASE}/deploy/check/${subdomain}`);
+export async function checkSubdomain(subdomain: string): Promise<SubdomainCheck> {
+  const res = await fetchWithAuth(`${API_BASE}/deploy/check/${subdomain}`);
   const data = await res.json();
-  return data.available;
+  return data;
 }
 
 export async function fetchProfile(): Promise<PortfolioData | null> {
@@ -146,5 +148,17 @@ export async function fetchAIHistory(): Promise<AITemplateInfo[]> {
 export async function fetchAITemplate(id: string): Promise<{ id: string; name: string; html: string }> {
   const res = await fetchWithAuth(`${API_BASE}/templates/ai/${id}`);
   if (!res.ok) throw new Error("Failed to fetch AI template");
+  return res.json();
+}
+
+export async function fetchPortfolios(): Promise<Portfolio[]> {
+  const res = await fetchWithAuth(`${API_BASE}/portfolios`);
+  if (!res.ok) throw new Error("Failed to fetch portfolios");
+  return res.json();
+}
+
+export async function fetchPortfolio(id: string): Promise<Portfolio> {
+  const res = await fetchWithAuth(`${API_BASE}/portfolios/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch portfolio");
   return res.json();
 }

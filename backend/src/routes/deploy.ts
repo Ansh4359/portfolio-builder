@@ -25,6 +25,7 @@ function renderAITemplate(htmlTemplate: string, data: PortfolioData): string {
 }
 
 const API_BASE = process.env.API_URL || "http://localhost:3001";
+const CUSTOM_DOMAIN = "myfolio.codes";
 
 const router = Router();
 
@@ -37,6 +38,26 @@ router.get(
 
       if (sanitized.length < 3) {
         res.status(400).json({ available: false, error: "Subdomain too short" });
+        return;
+      }
+
+      const existingPortfolio = await Portfolio.findOne({ subdomain: sanitized });
+      if (existingPortfolio) {
+        const token = req.headers.authorization?.replace("Bearer ", "");
+        let currentUserId: string | undefined;
+        if (token) {
+          try {
+            const { getAuth } = await import("firebase-admin/auth");
+            const decoded = await getAuth().verifyIdToken(token);
+            const { User } = await import("../models/User.js");
+            const currentUser = await User.findOne({ firebaseUid: decoded.uid });
+            if (currentUser && existingPortfolio.userId.equals(currentUser._id)) {
+              res.json({ available: true, subdomain: sanitized, owned: true });
+              return;
+            }
+          } catch {}
+        }
+        res.json({ available: false, subdomain: sanitized });
         return;
       }
 
@@ -133,30 +154,6 @@ router.post(
         return;
       }
 
-      let html: string;
-
-      if (templateId.startsWith("ai-")) {
-        const aiId = templateId.replace("ai-", "");
-        const aiTemplate = await AITemplate.findOne({
-          _id: aiId,
-          userId: req.user?._id,
-        });
-        if (!aiTemplate) {
-          res.status(404).json({ error: "AI template not found" });
-          return;
-        }
-        html = renderAITemplate(aiTemplate.html, data);
-      } else {
-        const template = getTemplate(templateId);
-        if (!template) {
-          res
-            .status(400)
-            .json({ error: `Template "${templateId}" not found` });
-          return;
-        }
-        html = template.generate(data);
-      }
-
       let projectName: string;
 
       if (subdomain) {
@@ -182,8 +179,10 @@ router.post(
         projectName = sanitizeProjectName(`${data.name}-portfolio`);
       }
 
-      const exists = await checkProjectExists(projectName);
-      if (exists) {
+      const existingPortfolio = await Portfolio.findOne({ subdomain: projectName });
+      const isRedeploy = existingPortfolio && existingPortfolio.userId.equals(req.user?._id);
+
+      if (existingPortfolio && !isRedeploy) {
         res.status(409).json({
           error: `Subdomain "${projectName}" is already taken. Please choose a different name.`,
           suggestion: `${projectName}-${Date.now().toString(36)}`,
@@ -191,40 +190,98 @@ router.post(
         return;
       }
 
-      // Step 1: Inject SEO meta tags into <head>
-      const deployedUrl = `https://${projectName}.vercel.app`;
+      if (!isRedeploy) {
+        const exists = await checkProjectExists(projectName);
+        if (exists) {
+          res.status(409).json({
+            error: `Subdomain "${projectName}" is already taken. Please choose a different name.`,
+            suggestion: `${projectName}-${Date.now().toString(36)}`,
+          });
+          return;
+        }
+      }
+
+      let html: string;
+
+      if (templateId.startsWith("ai-")) {
+        const aiId = templateId.replace("ai-", "");
+        const aiTemplate = await AITemplate.findOne({
+          _id: aiId,
+          userId: req.user?._id,
+        });
+        if (!aiTemplate) {
+          res.status(404).json({ error: "AI template not found" });
+          return;
+        }
+        html = renderAITemplate(aiTemplate.html, data);
+      } else {
+        const template = getTemplate(templateId);
+        if (!template) {
+          res
+            .status(400)
+            .json({ error: `Template "${templateId}" not found` });
+          return;
+        }
+        html = template.generate(data);
+      }
+
+      const deployedUrl = `https://${projectName}.${CUSTOM_DOMAIN}`;
       const seoTags = generateMetaTags(data, deployedUrl);
       html = html.replace("</head>", `${seoTags}\n</head>`);
 
-      // Step 2: Create Portfolio in MongoDB first (to get portfolioId)
-      const portfolio = await Portfolio.create({
-        userId: req.user?._id,
-        name: data.name,
-        title: data.title,
-        email: data.email,
-        phone: data.phone,
-        location: data.location,
-        about: data.about,
-        skills: data.skills || [],
-        experience: data.experience || [],
-        education: data.education || [],
-        projects: data.projects || [],
-        socials: data.socials || {},
-        templateId,
-        subdomain: projectName,
-        deploymentUrl: deployedUrl,
-      });
+      let portfolio;
+      if (isRedeploy) {
+        portfolio = await Portfolio.findOneAndUpdate(
+          { _id: existingPortfolio._id },
+          {
+            name: data.name,
+            title: data.title,
+            email: data.email,
+            phone: data.phone,
+            location: data.location,
+            about: data.about,
+            skills: data.skills || [],
+            experience: data.experience || [],
+            education: data.education || [],
+            projects: data.projects || [],
+            socials: data.socials || {},
+            templateId,
+            deploymentUrl: deployedUrl,
+          },
+          { new: true }
+        );
+        if (!portfolio) {
+          res.status(404).json({ error: "Portfolio not found" });
+          return;
+        }
+        console.log(`[deploy] Portfolio updated in DB: ${portfolio._id}`);
+      } else {
+        portfolio = await Portfolio.create({
+          userId: req.user?._id,
+          name: data.name,
+          title: data.title,
+          email: data.email,
+          phone: data.phone,
+          location: data.location,
+          about: data.about,
+          skills: data.skills || [],
+          experience: data.experience || [],
+          education: data.education || [],
+          projects: data.projects || [],
+          socials: data.socials || {},
+          templateId,
+          subdomain: projectName,
+          deploymentUrl: deployedUrl,
+        });
+        console.log(`[deploy] Portfolio saved to DB: ${portfolio._id}`);
+      }
 
-      console.log(`[deploy] Portfolio saved to DB: ${portfolio._id}`);
-
-      // Step 3: Inject tracking script into </body>
       const trackingScript = generateTrackingScript(
         portfolio._id.toString(),
         API_BASE
       );
       html = html.replace("</body>", `${trackingScript}\n</body>`);
 
-      // Step 4: Deploy to Vercel (with SEO + tracking)
       console.log(`[deploy] HTML ready: ${html.length} chars`);
 
       const result = await deployToVercel(
@@ -235,7 +292,6 @@ router.post(
 
       console.log(`[deploy] Deployed to: ${result.url}`);
 
-      // Step 5: Send deployment email
       const user = await User.findById(req.user?._id).select("email displayName");
       if (user?.email) {
         sendDeploymentEmail(
@@ -251,6 +307,7 @@ router.post(
         deploymentId: result.deploymentId,
         projectName,
         portfolioId: portfolio._id,
+        redeployed: isRedeploy,
       });
     } catch (err: any) {
       console.error("[deploy] error:", err);

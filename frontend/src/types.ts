@@ -59,6 +59,13 @@ export interface DeployResponse {
   projectName: string;
   error?: string;
   suggestion?: string;
+  redeployed?: boolean;
+}
+
+export interface SubdomainCheck {
+  available: boolean;
+  subdomain?: string;
+  owned?: boolean;
 }
 
 export interface PreviewResponse {
@@ -118,4 +125,26 @@ export function emptyEducation(): Education {
 
 export function emptyProject(): Project {
   return { name: "", description: "", url: "", tech: [] };
+}
+
+export interface Portfolio {
+  _id: string;
+  userId: string;
+  name: string;
+  title: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  about: string;
+  skills: string[];
+  experience: Experience[];
+  education: Education[];
+  projects: Project[];
+  socials: Socials;
+  templateId: string;
+  subdomain?: string;
+  deploymentUrl?: string;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
 }
