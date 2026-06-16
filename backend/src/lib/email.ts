@@ -90,6 +90,96 @@ export async function sendMilestoneEmail(
   }
 }
 
+export async function sendMagicLinkEmail(
+  to: string,
+  link: string
+): Promise<void> {
+  try {
+    const resend = getResendClient();
+    await resend.emails.send({
+      from: getFromEmail(),
+      to,
+      subject: "Your sign-in link for Portfolio Builder",
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Sign in to Portfolio Builder</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f7f4ed; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f7f4ed; padding: 48px 16px;">
+            <tr>
+              <td align="center">
+
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #fcfbf8; border: 1px solid #eceae4; border-radius: 16px; overflow: hidden;">
+
+                  <!-- Header -->
+                  <tr>
+                    <td style="background-color: #1c1c1c; padding: 28px 40px; text-align: center;">
+                      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a49e;">Portfolio Builder</span>
+                    </td>
+                  </tr>
+
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 48px 40px 36px;">
+                      <p style="margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #1c1c1c; line-height: 1.3;">
+                        Here's your sign-in link
+                      </p>
+                      <p style="margin: 0 0 32px; font-size: 15px; color: #5f5f5d; line-height: 1.6;">
+                        Click the button below to sign in to your Portfolio Builder account. This link expires in 15 minutes.
+                      </p>
+
+                      <!-- CTA -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td>
+                            <a href="${link}"
+                              style="display: block; text-align: center; padding: 14px 24px; background-color: #1c1c1c; color: #fcfbf8; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; letter-spacing: 0.01em;">
+                              Sign In to Portfolio Builder →
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin: 28px 0 0; font-size: 13px; color: #a8a49e; line-height: 1.5;">
+                        If you didn't request this link, you can safely ignore this email.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 40px; border-top: 1px solid #eceae4; text-align: center;">
+                      <p style="margin: 0 0 8px; font-size: 13px; color: #a8a49e;">
+                        Questions? Reply to this email anytime — we actually read them.
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #c4c1bb;">
+                        © 2026 Portfolio Builder ·
+                        <a href="https://myfolio.codes" style="color: #a8a49e; text-decoration: underline;">myfolio.codes</a>
+                      </p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+
+        </body>
+        </html>
+      `,
+    });
+    console.log(`[email] Magic link email sent to ${to}`);
+  } catch (error) {
+    console.error("[email] Failed to send magic link email:", error);
+    throw error;
+  }
+}
+
 export async function sendWelcomeEmail(
   to: string,
   name: string

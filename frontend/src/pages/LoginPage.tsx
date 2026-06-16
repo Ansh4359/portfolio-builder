@@ -5,28 +5,24 @@ import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithEmail, registerWithEmail, loginWithGoogle } = useAuth();
+  const { sendMagicLink, loginWithGoogle } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isLogin) {
-        await loginWithEmail(email, password);
-        toast.success("Logged in successfully!");
-      } else {
-        await registerWithEmail(email, password);
-        toast.success("Account created successfully!");
-      }
-      navigate("/");
+      await sendMagicLink(email, isLogin ? undefined : name);
+      setLinkSent(true);
+      toast.success("Magic link sent! Check your inbox.");
     } catch (error: any) {
-      console.error("Auth error:", error);
-      toast.error(error.message || "Authentication failed");
+      console.error("Magic link error:", error);
+      toast.error(error.message || "Failed to send magic link");
     } finally {
       setLoading(false);
     }
@@ -47,6 +43,43 @@ export default function LoginPage() {
     }
   };
 
+  if (linkSent) {
+    return (
+      <div className="py-6 pb-[60px] flex-1">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
+            <div className="bg-cream border border-border rounded-xl p-10 w-full max-w-[400px] text-center">
+              <div className="w-14 h-14 bg-charcoal/[0.04] text-charcoal rounded-[14px] flex items-center justify-center mx-auto mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-semibold mb-2 tracking-[-0.5px]">
+                Check your email
+              </h1>
+              <p className="text-muted text-[15px] mb-6 leading-relaxed">
+                We sent a sign-in link to{" "}
+                <span className="text-charcoal font-medium">{email}</span>.
+                Click the link to {isLogin ? "sign in" : "create your account"}.
+              </p>
+              <p className="text-sm text-muted">
+                Didn't get it? Check your spam folder or{" "}
+                <button
+                  type="button"
+                  className="bg-none border-none text-charcoal cursor-pointer text-sm underline hover:opacity-70 transition-opacity"
+                  onClick={() => setLinkSent(false)}
+                >
+                  try again
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-6 pb-[60px] flex-1">
       <div className="max-w-[1200px] mx-auto px-6">
@@ -57,11 +90,25 @@ export default function LoginPage() {
             </h1>
             <p className="text-center text-muted mb-6 text-[15px]">
               {isLogin
-                ? "Sign in to manage your portfolios"
-                : "Sign up to get started"}
+                ? "Enter your email to receive a sign-in link"
+                : "Enter your details to get started"}
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {!isLogin && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm text-charcoal">Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your full name"
+                    required={!isLogin}
+                    className="px-3 py-2.5 border border-border rounded-sm bg-cream text-charcoal placeholder:text-muted focus:outline-none focus:border-blue-500/50 focus:ring-3 focus:ring-blue-500/15 transition-[box-shadow,border-color]"
+                  />
+                </div>
+              )}
+
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm text-charcoal">Email</label>
                 <input
@@ -74,29 +121,12 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm text-charcoal">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                  className="px-3 py-2.5 border border-border rounded-sm bg-cream text-charcoal placeholder:text-muted focus:outline-none focus:border-blue-500/50 focus:ring-3 focus:ring-blue-500/15 transition-[box-shadow,border-color]"
-                />
-              </div>
-
               <button
                 type="submit"
                 className="w-full bg-charcoal text-cream-light px-4 py-2.5 rounded-sm text-base shadow-btn hover:opacity-85 active:opacity-80 transition-opacity disabled:bg-border disabled:text-muted disabled:shadow-none disabled:opacity-100 disabled:cursor-not-allowed"
                 disabled={loading}
               >
-                {loading
-                  ? "Loading..."
-                  : isLogin
-                    ? "Sign In"
-                    : "Create Account"}
+                {loading ? "Sending..." : "Send Magic Link"}
               </button>
             </form>
 
@@ -125,7 +155,10 @@ export default function LoginPage() {
               <button
                 type="button"
                 className="bg-none border-none text-charcoal cursor-pointer text-sm underline hover:opacity-70 transition-opacity"
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setName("");
+                }}
               >
                 {isLogin ? "Sign Up" : "Sign In"}
               </button>

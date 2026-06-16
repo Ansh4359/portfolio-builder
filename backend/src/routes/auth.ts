@@ -1,8 +1,34 @@
 import { Router, Request, Response } from "express";
 import { authenticateToken, requireAuth } from "../middleware/auth.js";
+import { getAuthInstance } from "../config/firebase.js";
 import { User } from "../models/User.js";
+import { sendMagicLinkEmail } from "../lib/email.js";
 
 const router = Router();
+
+router.post("/send-magic-link", async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email || typeof email !== "string") {
+      res.status(400).json({ error: "Valid email is required" });
+      return;
+    }
+
+    const auth = getAuthInstance();
+    const actionCodeSettings = {
+      url: process.env.MAGIC_LINK_REDIRECT_URL || "https://myfolio.codes/finish-sign-in",
+      handleCodeInApp: true,
+    };
+
+    const link = await auth.generateSignInWithEmailLink(email, actionCodeSettings);
+    await sendMagicLinkEmail(email, link);
+
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Send magic link error:", error);
+    res.status(500).json({ error: error.message || "Failed to send magic link" });
+  }
+});
 
 router.get("/me", authenticateToken, async (req: Request, res: Response) => {
   try {

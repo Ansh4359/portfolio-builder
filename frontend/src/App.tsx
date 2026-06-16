@@ -10,6 +10,7 @@ import TemplatePage from "./pages/TemplatePage";
 import DeployPage from "./pages/DeployPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
+import FinishSignInPage from "./pages/FinishSignInPage";
 import { fetchProfile, fetchPortfolio } from "./api";
 import { emptyPortfolio } from "./types";
 import type { PortfolioData } from "./types";
@@ -124,6 +125,7 @@ function AppRoutes() {
         }
       />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/finish-sign-in" element={<FinishSignInPage />} />
       <Route
         path="/profile"
         element={

@@ -2,19 +2,21 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  signInWithEmailLink,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
 import { auth, googleProvider } from "../config/firebase";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001/api";
+
 interface AuthContextType {
   user: FirebaseUser | null;
   loading: boolean;
-  loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string) => Promise<void>;
+  sendMagicLink: (email: string, name?: string) => Promise<void>;
+  finishMagicLinkSignIn: () => Promise<string | null>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
@@ -47,12 +49,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => unsubscribe();
   }, []);
 
-  const loginWithEmail = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+  const sendMagicLink = async (email: string, name?: string) => {
+    localStorage.setItem("emailForSignIn", email);
+    if (name) {
+      localStorage.setItem("nameForSignIn", name);
+    }
+
+    const res = await fetch(`${API_BASE}/auth/send-magic-link`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      localStorage.removeItem("emailForSignIn");
+      localStorage.removeItem("nameForSignIn");
+      throw new Error(data.error || "Failed to send magic link");
+    }
   };
 
-  const registerWithEmail = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+  const finishMagicLinkSignIn = async (): Promise<string | null> => {
+    const email = localStorage.getItem("emailForSignIn");
+    const name = localStorage.getItem("nameForSignIn");
+
+    if (!email) {
+      throw new Error("No email found. Please try signing in again.");
+    }
+
+    const result = await signInWithEmailLink(auth, email, window.location.href);
+    localStorage.removeItem("emailForSignIn");
+
+    if (name) {
+      await updateProfile(result.user, { displayName: name });
+      localStorage.removeItem("nameForSignIn");
+    }
+
+    return name;
   };
 
   const loginWithGoogle = async () => {
@@ -71,8 +104,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value: AuthContextType = {
     user,
     loading,
-    loginWithEmail,
-    registerWithEmail,
+    sendMagicLink,
+    finishMagicLinkSignIn,
     loginWithGoogle,
     logout,
     getToken,
