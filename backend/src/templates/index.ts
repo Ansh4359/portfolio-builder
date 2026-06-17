@@ -1,19 +1,19 @@
 import type { PortfolioData } from "../types";
-import { generateMinimal } from "./minimal.js";
-import { generateCreative } from "./creative.js";
-import { generateDeveloper } from "./developer.js";
-import { generateModern } from "./modern.js";
-import { generateElegant } from "./elegant.js";
-import { generateGlass } from "./glass.js";
-import { generateMono } from "./mono.js";
-import { generateSunset } from "./sunset.js";
+import { generate as generateMinimal } from "./minimal.js";
+import { generate as generateCreative } from "./creative.js";
+import { generate as generateDeveloper } from "./developer.js";
+import { generate as generateModern } from "./modern.js";
+import { generate as generateElegant } from "./elegant.js";
+import { generate as generateGlass } from "./glass.js";
+import { generate as generateMono } from "./mono.js";
+import { generate as generateSunset } from "./sunset.js";
 
 export interface Template {
   id: string;
   name: string;
   description: string;
   thumbnail: string;
-  generate: (data: PortfolioData) => string;
+  generate: (data: PortfolioData, esc: (s: string) => string) => string;
 }
 
 export const templates: Template[] = [

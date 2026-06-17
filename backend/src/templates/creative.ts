@@ -1,207 +1,187 @@
-import type { PortfolioData } from "../types";
-
-export function generateCreative(data: PortfolioData): string {
-  const esc = (s: string) => s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
+export function generate(data: any, esc: (s: string) => string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>${esc(data.name)} — Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0c0a09;--fg:#fafaf9;--muted:#a8a29e;
-    --accent:#facc15;--accent2:#f97316;
-    --surface:#1c1917;--border:#292524;
-  }
-  html{scroll-behavior:smooth}
-  body{
-    font-family:'Syne',sans-serif;background:var(--bg);color:var(--fg);
-    line-height:1.6;overflow-x:hidden;
-  }
-  .mono{font-family:'Space Mono',monospace;font-size:0.72em;letter-spacing:0.12em;text-transform:uppercase}
-  a{color:var(--accent);text-decoration:none;transition:color 0.2s}
-  a:hover{color:var(--accent2)}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--fg:#f0f0f0;--muted:#888;--accent:#c8ff00;--card:#141414;--border:#222}
+body{font-family:'Space Mono',monospace;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px;overflow-x:hidden}
+h1,h2,h3{font-family:'Syne',sans-serif;font-weight:700;line-height:1.1}
+a{color:var(--accent);text-decoration:none}
+a:hover{opacity:.7}
+.container{max-width:900px;margin:0 auto;padding:0 24px}
 
-  /* Hero */
-  .hero{
-    min-height:100vh;display:flex;flex-direction:column;
-    justify-content:center;padding:60px clamp(24px,6vw,120px);
-    position:relative;
-  }
-  .hero::before{
-    content:'';position:absolute;top:-30%;right:-20%;
-    width:600px;height:600px;border-radius:50%;
-    background:radial-gradient(circle,rgba(250,204,21,0.12) 0%,transparent 70%);
-    pointer-events:none;
-  }
-  .hero h1{
-    font-size:clamp(3rem,10vw,8rem);font-weight:800;
-    line-height:0.95;letter-spacing:-0.04em;
-    background:linear-gradient(135deg,var(--fg) 40%,var(--accent));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;
-  }
-  .hero .tagline{
-    font-size:clamp(1rem,2.5vw,1.5rem);color:var(--muted);
-    margin-top:16px;max-width:500px;
-  }
-  .hero .email-link{
-    display:inline-block;margin-top:32px;padding:14px 32px;
-    border:2px solid var(--accent);font-size:0.85rem;
-    letter-spacing:0.08em;text-transform:uppercase;
-    transition:all 0.3s;font-family:'Space Mono',monospace;
-  }
-  .hero .email-link:hover{
-    background:var(--accent);color:var(--bg);text-decoration:none;
-  }
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 60px}
+.hero .eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.2em;color:var(--accent);margin-bottom:16px}
+.hero h1{font-size:clamp(2.8rem,7vw,5rem);font-weight:800;margin-bottom:16px;background:linear-gradient(135deg,var(--fg) 0%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{font-size:clamp(1rem,2vw,1.2rem);color:var(--muted);max-width:500px;margin-bottom:32px}
+.hero .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;font-family:'Space Mono',monospace;font-size:.85rem;border:1px solid var(--accent);color:var(--accent);min-height:44px;transition:all .2s}
+.btn:hover{background:var(--accent);color:var(--bg)}
 
-  /* Sections */
-  .section{
-    padding:80px clamp(24px,6vw,120px);
-    border-top:1px solid var(--border);
-  }
-  .section-label{
-    font-size:0.8rem;margin-bottom:40px;
-    display:flex;align-items:center;gap:16px;
-  }
-  .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+/* Sections */
+.section{padding:80px 0}
+.section-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--accent);margin-bottom:24px;font-family:'Space Mono',monospace}
+.section h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:20px}
+.section p{color:var(--muted);margin-bottom:16px;max-width:600px}
 
-  .about-text{font-size:1.2rem;max-width:600px;color:var(--muted);line-height:1.8}
+/* About */
+.about-text{font-size:1rem;line-height:1.8;color:var(--muted)}
 
-  /* Experience */
-  .exp-grid{display:grid;gap:40px}
-  .exp-card{
-    padding:32px;border:1px solid var(--border);
-    transition:border-color 0.3s;
-  }
-  .exp-card:hover{border-color:var(--accent)}
-  .exp-card h3{font-size:1.3rem;font-weight:700;margin-bottom:4px}
-  .exp-card .meta{color:var(--accent);margin-bottom:12px}
-  .exp-card p{color:var(--muted);font-size:0.95rem}
+/* Experience */
+.exp-grid{display:grid;gap:20px;margin-top:24px}
+.exp-card{background:var(--card);border:1px solid var(--border);padding:24px;transition:border-color .2s}
+.exp-card:hover{border-color:var(--accent)}
+.exp-card h3{font-size:1.05rem;margin-bottom:4px}
+.exp-card .company{font-size:.85rem;color:var(--accent);margin-bottom:4px}
+.exp-card .period{font-size:.75rem;color:var(--muted);margin-bottom:10px}
+.exp-card p{font-size:.85rem;color:var(--muted)}
 
-  /* Skills */
-  .skills-wrap{display:flex;flex-wrap:wrap;gap:12px}
-  .skill-pill{
-    padding:8px 20px;border:1px solid var(--border);
-    font-size:0.85rem;font-weight:600;
-    transition:all 0.3s;cursor:default;
-  }
-  .skill-pill:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+/* Education */
+.edu-grid{display:grid;gap:16px;margin-top:24px}
+.edu-card{background:var(--card);border:1px solid var(--border);padding:20px}
+.edu-card h3{font-size:1rem;margin-bottom:4px}
+.edu-card .school{font-size:.85rem;color:var(--accent);margin-bottom:2px}
+.edu-card .period{font-size:.75rem;color:var(--muted)}
 
-  /* Projects */
-  .project-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
-  .project-card{
-    background:var(--surface);padding:32px;border:1px solid var(--border);
-    transition:transform 0.3s,border-color 0.3s;
-  }
-  .project-card:hover{transform:translateY(-4px);border-color:var(--accent)}
-  .project-card h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
-  .project-card p{color:var(--muted);font-size:0.9rem;margin-bottom:16px}
-  .project-card .tech-tags{display:flex;flex-wrap:wrap;gap:6px}
-  .project-card .tech-tags span{
-    font-size:0.7rem;padding:3px 10px;
-    border:1px solid var(--border);color:var(--accent);
-  }
+/* Skills */
+.skills-wrap{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.skill{padding:10px 18px;border:1px solid var(--border);font-size:.8rem;font-family:'Space Mono',monospace;min-height:44px;display:inline-flex;align-items:center;transition:border-color .2s}
+.skill:hover{border-color:var(--accent)}
 
-  /* Footer */
-  footer{
-    padding:60px clamp(24px,6vw,120px);
-    display:flex;justify-content:space-between;align-items:center;
-    flex-wrap:wrap;gap:20px;border-top:1px solid var(--border);
-    color:var(--muted);font-size:0.85rem;
-  }
-  .social-links{display:flex;gap:24px}
+/* Projects */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:24px}
+.project-card{background:var(--card);border:1px solid var(--border);padding:24px;transition:border-color .2s}
+.project-card:hover{border-color:var(--accent)}
+.project-card h3{font-size:1.05rem;margin-bottom:8px}
+.project-card p{font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.project-tech{display:flex;flex-wrap:wrap;gap:6px}
+.project-tech span{font-size:.7rem;padding:4px 10px;border:1px solid var(--border);font-family:'Space Mono',monospace}
 
-  @media(max-width:600px){
-    .hero h1{font-size:2.8rem}
-    .project-grid{grid-template-columns:1fr}
-  }
+/* Footer */
+.footer{padding:60px 0;border-top:1px solid var(--border);text-align:center}
+.footer .socials{display:flex;justify-content:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.footer .socials a{font-size:.85rem;min-height:44px;display:inline-flex;align-items:center;padding:8px}
+.footer p{font-size:.75rem;color:var(--muted)}
+
+@media(max-width:768px){
+.hero{min-height:auto;padding:100px 0 60px}
+.section{padding:60px 0}
+.projects-grid{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:480px){
+.hero{padding:60px 0 40px}
+.hero h1{font-size:2.4rem}
+.section{padding:48px 0}
+.section h2{font-size:1.6rem}
+.projects-grid{grid-template-columns:1fr}
+.exp-card{padding:20px}
+.project-card{padding:20px}
+.btn{width:100%;justify-content:center}
+.hero .cta-row{flex-direction:column}
+}
 </style>
 </head>
 <body>
-  <section class="hero">
-    <p class="mono">${esc(data.title)}</p>
-    <h1>${esc(data.name)}</h1>
-    <p class="tagline">${esc(data.about).slice(0, 120)}${data.about.length > 120 ? "..." : ""}</p>
-    <a href="mailto:${esc(data.email)}" class="email-link">Get in touch</a>
-  </section>
 
-  ${
-    data.about.length > 120
-      ? `<section class="section" id="about">
-    <p class="section-label mono">About</p>
-    <p class="about-text">${esc(data.about)}</p>
-  </section>`
-      : ""
-  }
+<div class="container">
 
-  ${
-    data.experience.length
-      ? `<section class="section" id="experience">
-    <p class="section-label mono">Experience</p>
-    <div class="exp-grid">
-      ${data.experience
-        .map(
-          (e) => `
-        <div class="exp-card">
-          <h3>${esc(e.role)}</h3>
-          <p class="meta mono">${esc(e.company)} · ${esc(e.period)}</p>
-          <p>${esc(e.description)}</p>
-        </div>`
-        )
-        .join("")}
-    </div>
-  </section>`
-      : ""
-  }
+<section class="hero" id="hero">
+<div class="eyebrow">Hello, I'm</div>
+<h1>${esc(data.name)}</h1>
+<div class="subtitle">${esc(data.title)}</div>
+<div class="cta-row">
+${data.email ? `<a href="mailto:${esc(data.email)}" class="btn">Get in Touch</a>` : ''}
+${data.socials.github ? `<a href="${esc(data.socials.github)}" target="_blank" class="btn">GitHub</a>` : ''}
+</div>
+</section>
 
-  ${
-    data.skills.length
-      ? `<section class="section" id="skills">
-    <p class="section-label mono">Skills</p>
-    <div class="skills-wrap">
-      ${data.skills.map((s) => `<span class="skill-pill">${esc(s)}</span>`).join("")}
-    </div>
-  </section>`
-      : ""
-  }
+<section class="section" id="about">
+<div class="section-label">01 // About</div>
+<h2>About Me</h2>
+<p class="about-text">${esc(data.about) || 'A passionate developer building great things.'}</p>
+</section>
 
-  ${
-    data.projects.length
-      ? `<section class="section" id="projects">
-    <p class="section-label mono">Projects</p>
-    <div class="project-grid">
-      ${data.projects
-        .map(
-          (p) => `
-        <div class="project-card">
-          <h3>${p.url ? `<a href="${esc(p.url)}" target="_blank">${esc(p.name)} ↗</a>` : esc(p.name)}</h3>
-          <p>${esc(p.description)}</p>
-          <div class="tech-tags">
-            ${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}
-          </div>
-        </div>`
-        )
-        .join("")}
-    </div>
-  </section>`
-      : ""
-  }
+${data.experience.length > 0 ? `
+<section class="section" id="experience">
+<div class="section-label">02 // Experience</div>
+<h2>Work History</h2>
+<div class="exp-grid">
+${data.experience.map((e: any) => `
+<div class="exp-card">
+<h3>${esc(e.role)}</h3>
+<div class="company">${esc(e.company)}</div>
+<div class="period">${esc(e.period)}</div>
+<p>${esc(e.description)}</p>
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
 
-  <footer>
-    <span>${esc(data.name)}</span>
-    <div class="social-links mono">
-      ${data.socials.github ? `<a href="${esc(data.socials.github)}" target="_blank">GitHub</a>` : ""}
-      ${data.socials.linkedin ? `<a href="${esc(data.socials.linkedin)}" target="_blank">LinkedIn</a>` : ""}
-      ${data.socials.twitter ? `<a href="${esc(data.socials.twitter)}" target="_blank">Twitter</a>` : ""}
-      ${data.socials.website ? `<a href="${esc(data.socials.website)}" target="_blank">Web</a>` : ""}
-    </div>
-  </footer>
+${data.education.length > 0 ? `
+<section class="section" id="education">
+<div class="section-label">03 // Education</div>
+<h2>Education</h2>
+<div class="edu-grid">
+${data.education.map((e: any) => `
+<div class="edu-card">
+<h3>${esc(e.degree)}</h3>
+<div class="school">${esc(e.school)}</div>
+<div class="period">${esc(e.period)}</div>
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
+
+${data.skills.length > 0 ? `
+<section class="section" id="skills">
+<div class="section-label">04 // Skills</div>
+<h2>Tech Stack</h2>
+<div class="skills-wrap">
+${data.skills.map((s: string) => `<span class="skill">${esc(s)}</span>`).join('')}
+</div>
+</section>
+` : ''}
+
+${data.projects.length > 0 ? `
+<section class="section" id="projects">
+<div class="section-label">05 // Projects</div>
+<h2>Featured Work</h2>
+<div class="projects-grid">
+${data.projects.map((p: any) => `
+<div class="project-card">
+<h3>${esc(p.name)}</h3>
+<p>${esc(p.description)}</p>
+${p.tech.length > 0 ? `<div class="project-tech">${p.tech.map((t: string) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
+
+<footer class="footer" id="contact">
+<div class="socials">
+${data.email ? `<a href="mailto:${esc(data.email)}">Email</a>` : ''}
+${data.socials.github ? `<a href="${esc(data.socials.github)}" target="_blank">GitHub</a>` : ''}
+${data.socials.linkedin ? `<a href="${esc(data.socials.linkedin)}" target="_blank">LinkedIn</a>` : ''}
+${data.socials.twitter ? `<a href="${esc(data.socials.twitter)}" target="_blank">Twitter</a>` : ''}
+${data.socials.website ? `<a href="${esc(data.socials.website)}" target="_blank">Website</a>` : ''}
+</div>
+<p>${esc(data.name)} · Built with MyFolio</p>
+</footer>
+
+</div>
+
 </body>
 </html>`;
 }

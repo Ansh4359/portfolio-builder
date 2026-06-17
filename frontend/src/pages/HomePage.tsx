@@ -83,7 +83,7 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 text-center max-w-[720px]">
           <div className="inline-block px-4 py-1.5 bg-charcoal/[0.04] border border-border rounded-full text-sm text-muted mb-8">
-            Portfolio Builder
+            MyFolio
           </div>
           <h1 className="text-6xl font-semibold text-charcoal leading-[1.10] tracking-[-1.5px] mb-6">
             Build Your Portfolio
@@ -292,12 +292,12 @@ export default function HomePage() {
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex flex-col items-center gap-2 mb-10">
             <div className="text-xl font-semibold text-cream-light">
-              Portfolio<span>Builder</span>
+              MyFolio
             </div>
             <p className="text-sm">Build and deploy your portfolio in minutes.</p>
           </div>
           <div className="border-t border-cream-light/10 pt-6 text-center text-[13px]">
-            <p>&copy; {new Date().getFullYear()} Portfolio Builder. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} MyFolio. All rights reserved.</p>
           </div>
         </div>
       </footer>

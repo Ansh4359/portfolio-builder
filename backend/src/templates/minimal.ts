@@ -1,195 +1,176 @@
-import type { PortfolioData } from "../types";
-
-export function generateMinimal(data: PortfolioData): string {
-  const esc = (s: string) => s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
+export function generate(data: any, esc: (s: string) => string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>${esc(data.name)} — Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#faf8f4;--fg:#1a1a1a;--muted:#7a7570;--accent:#c45d3e;
-    --surface:#f0ece4;--border:#e0dbd3;
-  }
-  html{scroll-behavior:smooth}
-  body{
-    font-family:'Cormorant Garamond',Georgia,serif;
-    background:var(--bg);color:var(--fg);
-    line-height:1.7;font-size:18px;
-  }
-  .mono{font-family:'DM Mono',monospace;font-size:0.75em;letter-spacing:0.05em;text-transform:uppercase}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#faf8f5;--fg:#2c2c2c;--muted:#6b6b6b;--border:#e8e5e0;--accent:#8b7355;--card:#fff}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--fg);line-height:1.7;font-size:15px}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:300;line-height:1.2}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent)}
+a:hover{opacity:.7}
+.container{max-width:720px;margin:0 auto;padding:0 24px}
 
-  /* Layout */
-  .container{max-width:720px;margin:0 auto;padding:0 24px}
-  header{padding:100px 0 60px;text-align:center}
-  header h1{font-size:3.2rem;font-weight:300;letter-spacing:-0.02em;margin-bottom:8px}
-  header .subtitle{color:var(--muted);margin-bottom:24px}
-  header .contacts{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
-  header .contacts a{color:var(--muted);transition:color 0.2s}
-  header .contacts a:hover{color:var(--accent);text-decoration:none}
+/* Hero */
+.hero{padding:120px 0 80px;text-align:center}
+.hero h1{font-size:clamp(2.4rem,5vw,3.6rem);margin-bottom:12px;letter-spacing:-.02em}
+.hero .title{font-size:1rem;color:var(--muted);margin-bottom:24px}
+.hero .tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,2vw,1.3rem);color:var(--muted);font-style:italic;max-width:480px;margin:0 auto}
+.hero .divider{width:40px;height:1px;background:var(--accent);margin:32px auto 0}
 
-  section{padding:50px 0;border-top:1px solid var(--border)}
-  section h2{font-size:1.1rem;margin-bottom:30px;color:var(--accent)}
+/* Sections */
+.section{padding:60px 0}
+.section-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin-bottom:32px;font-family:'DM Mono',monospace}
+.section h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:24px}
+.section p{color:var(--muted);margin-bottom:16px;max-width:600px}
 
-  .about-text{font-size:1.15rem;font-weight:300;max-width:600px}
+/* About */
+.about-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.8;color:var(--fg)}
 
-  /* Experience */
-  .exp-item{margin-bottom:32px}
-  .exp-item .exp-header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
-  .exp-item h3{font-size:1.25rem;font-weight:500}
-  .exp-item .period{color:var(--muted)}
-  .exp-item .company{color:var(--muted);margin-bottom:6px}
-  .exp-item p{font-size:0.95rem;color:#4a4540}
+/* Experience & Education */
+.timeline{border-left:1px solid var(--border);padding-left:24px;margin-top:24px}
+.timeline-item{margin-bottom:32px;position:relative}
+.timeline-item::before{content:'';position:absolute;left:-29px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.timeline-item h3{font-size:1.1rem;font-weight:500;margin-bottom:2px}
+.timeline-item .meta{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+.timeline-item p{font-size:.9rem;color:var(--muted)}
 
-  /* Education */
-  .edu-item{margin-bottom:20px}
-  .edu-item h3{font-size:1.1rem;font-weight:500}
-  .edu-item .detail{color:var(--muted)}
+/* Skills */
+.skills-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.skill{padding:8px 16px;border:1px solid var(--border);font-size:.8rem;font-family:'DM Mono',monospace;transition:border-color .2s}
+.skill:hover{border-color:var(--accent)}
 
-  /* Skills */
-  .skills-grid{display:flex;flex-wrap:wrap;gap:10px}
-  .skill-tag{
-    padding:6px 16px;border:1px solid var(--border);border-radius:2px;
-    font-size:0.85rem;transition:all 0.2s;
-  }
-  .skill-tag:hover{border-color:var(--accent);color:var(--accent)}
+/* Projects */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:24px}
+.project-card{border:1px solid var(--border);padding:24px;transition:border-color .2s}
+.project-card:hover{border-color:var(--accent)}
+.project-card h3{font-size:1.05rem;font-weight:500;margin-bottom:6px}
+.project-card p{font-size:.85rem;color:var(--muted);margin-bottom:10px}
+.project-tech{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.project-tech span{font-size:.7rem;padding:4px 10px;background:var(--bg);border:1px solid var(--border);font-family:'DM Mono',monospace}
 
-  /* Projects */
-  .project-item{margin-bottom:36px;padding-bottom:36px;border-bottom:1px solid var(--border)}
-  .project-item:last-child{border-bottom:none}
-  .project-item h3{font-size:1.2rem;font-weight:500;margin-bottom:6px}
-  .project-item p{color:#4a4540;margin-bottom:10px;font-size:0.95rem}
-  .project-tech{display:flex;flex-wrap:wrap;gap:8px}
-  .project-tech span{
-    font-size:0.75rem;padding:3px 10px;
-    background:var(--surface);border-radius:2px;
-  }
+/* Contact */
+.contact-list{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px}
+.contact-list a,.contact-list span{font-size:.85rem;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 0}
 
-  footer{padding:60px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+/* Footer */
+.footer{padding:40px 0;border-top:1px solid var(--border);text-align:center;font-size:.75rem;color:var(--muted)}
 
-  @media(max-width:600px){
-    header h1{font-size:2.2rem}
-    header{padding:60px 0 40px}
-    section{padding:36px 0}
-  }
+@media(max-width:768px){
+.hero{padding:80px 0 60px}
+.section{padding:48px 0}
+.projects-grid{grid-template-columns:1fr 1fr}
+.timeline{padding-left:20px}
+}
+
+@media(max-width:480px){
+.hero{padding:60px 0 40px}
+.hero h1{font-size:2rem}
+.section{padding:36px 0}
+.section h2{font-size:1.4rem}
+.projects-grid{grid-template-columns:1fr}
+.contact-list{flex-direction:column;gap:8px}
+.skill{min-height:44px;display:inline-flex;align-items:center}
+.project-tech span{min-height:32px;display:inline-flex;align-items:center}
+}
 </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>${esc(data.name)}</h1>
-      <p class="subtitle mono">${esc(data.title)}</p>
-      <div class="contacts mono">
-        <a href="mailto:${esc(data.email)}">${esc(data.email)}</a>
-        ${data.phone ? `<span>${esc(data.phone)}</span>` : ""}
-        ${data.location ? `<span>${esc(data.location)}</span>` : ""}
-      </div>
-    </div>
-  </header>
 
-  <main class="container">
-    <section id="about">
-      <h2 class="mono">About</h2>
-      <p class="about-text">${esc(data.about)}</p>
-    </section>
+<div class="container">
 
-    ${
-      data.experience.length
-        ? `<section id="experience">
-      <h2 class="mono">Experience</h2>
-      ${data.experience
-        .map(
-          (e) => `
-        <div class="exp-item">
-          <div class="exp-header">
-            <h3>${esc(e.role)}</h3>
-            <span class="period mono">${esc(e.period)}</span>
-          </div>
-          <div class="company mono">${esc(e.company)}</div>
-          <p>${esc(e.description)}</p>
-        </div>`
-        )
-        .join("")}
-    </section>`
-        : ""
-    }
+<section class="hero" id="hero">
+<h1>${esc(data.name)}</h1>
+<div class="title">${esc(data.title)}</div>
+${data.about ? `<div class="tagline">${esc(data.about).slice(0,120)}${data.about.length > 120 ? '...' : ''}</div>` : ''}
+<div class="divider"></div>
+</section>
 
-    ${
-      data.education.length
-        ? `<section id="education">
-      <h2 class="mono">Education</h2>
-      ${data.education
-        .map(
-          (e) => `
-        <div class="edu-item">
-          <h3>${esc(e.degree)}</h3>
-          <div class="detail mono">${esc(e.school)} · ${esc(e.period)}</div>
-        </div>`
-        )
-        .join("")}
-    </section>`
-        : ""
-    }
+${data.about ? `
+<section class="section" id="about">
+<div class="section-label">01 // About</div>
+<p class="about-text">${esc(data.about)}</p>
+</section>
+` : ''}
 
-    ${
-      data.skills.length
-        ? `<section id="skills">
-      <h2 class="mono">Skills</h2>
-      <div class="skills-grid">
-        ${data.skills.map((s) => `<span class="skill-tag">${esc(s)}</span>`).join("")}
-      </div>
-    </section>`
-        : ""
-    }
+${data.experience.length > 0 ? `
+<section class="section" id="experience">
+<div class="section-label">02 // Experience</div>
+<div class="timeline">
+${data.experience.map((e: any) => `
+<div class="timeline-item">
+<h3>${esc(e.role)}</h3>
+<div class="meta">${esc(e.company)} · ${esc(e.period)}</div>
+<p>${esc(e.description)}</p>
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
 
-    ${
-      data.projects.length
-        ? `<section id="projects">
-      <h2 class="mono">Projects</h2>
-      ${data.projects
-        .map(
-          (p) => `
-        <div class="project-item">
-          <h3>${p.url ? `<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>` : esc(p.name)}</h3>
-          <p>${esc(p.description)}</p>
-          <div class="project-tech">
-            ${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}
-          </div>
-        </div>`
-        )
-        .join("")}
-    </section>`
-        : ""
-    }
+${data.education.length > 0 ? `
+<section class="section" id="education">
+<div class="section-label">03 // Education</div>
+<div class="timeline">
+${data.education.map((e: any) => `
+<div class="timeline-item">
+<h3>${esc(e.degree)}</h3>
+<div class="meta">${esc(e.school)} · ${esc(e.period)}</div>
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
 
-    ${
-      Object.values(data.socials).some(Boolean)
-        ? `<section id="socials">
-      <h2 class="mono">Links</h2>
-      <div class="contacts mono">
-        ${data.socials.github ? `<a href="${esc(data.socials.github)}" target="_blank">GitHub</a>` : ""}
-        ${data.socials.linkedin ? `<a href="${esc(data.socials.linkedin)}" target="_blank">LinkedIn</a>` : ""}
-        ${data.socials.twitter ? `<a href="${esc(data.socials.twitter)}" target="_blank">Twitter</a>` : ""}
-        ${data.socials.website ? `<a href="${esc(data.socials.website)}" target="_blank">Website</a>` : ""}
-      </div>
-    </section>`
-        : ""
-    }
-  </main>
+${data.skills.length > 0 ? `
+<section class="section" id="skills">
+<div class="section-label">04 // Skills</div>
+<div class="skills-grid">
+${data.skills.map((s: string) => `<span class="skill">${esc(s)}</span>`).join('')}
+</div>
+</section>
+` : ''}
 
-  <footer>
-    <div class="container">
-      <p>${esc(data.name)} · Built with Portfolio Builder</p>
-    </div>
-  </footer>
+${data.projects.length > 0 ? `
+<section class="section" id="projects">
+<div class="section-label">05 // Projects</div>
+<div class="projects-grid">
+${data.projects.map((p: any) => `
+<div class="project-card">
+<h3>${esc(p.name)}</h3>
+<p>${esc(p.description)}</p>
+${p.tech.length > 0 ? `<div class="project-tech">${p.tech.map((t: string) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+</div>
+`).join('')}
+</div>
+</section>
+` : ''}
+
+<section class="section" id="contact">
+<div class="section-label">Contact</div>
+<div class="contact-list">
+${data.email ? `<a href="mailto:${esc(data.email)}">${esc(data.email)}</a>` : ''}
+${data.phone ? `<span>${esc(data.phone)}</span>` : ''}
+${data.location ? `<span>${esc(data.location)}</span>` : ''}
+${data.socials.github ? `<a href="${esc(data.socials.github)}" target="_blank">GitHub</a>` : ''}
+${data.socials.linkedin ? `<a href="${esc(data.socials.linkedin)}" target="_blank">LinkedIn</a>` : ''}
+${data.socials.twitter ? `<a href="${esc(data.socials.twitter)}" target="_blank">Twitter</a>` : ''}
+${data.socials.website ? `<a href="${esc(data.socials.website)}" target="_blank">Website</a>` : ''}
+</div>
+</section>
+
+<footer class="footer">
+<p>${esc(data.name)} · Built with MyFolio</p>
+</footer>
+
+</div>
+
 </body>
 </html>`;
 }

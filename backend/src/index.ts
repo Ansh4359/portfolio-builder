@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === "production") {
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    message: "Portfolio Builder API",
+    message: "MyFolio API",
     endpoints: {
       "GET  /api/templates": "List available templates",
       "GET  /api/templates/:id": "Get template metadata",
@@ -85,7 +85,7 @@ async function start() {
     app.listen(port, () => {
       console.log(`
   ┌─────────────────────────────────────────┐
-  │  Portfolio Builder API                  │
+  │  MyFolio API                  │
   │  http://localhost:${port}                   │
   │                                         │
   │  GET  /api/templates                    │

@@ -81,7 +81,7 @@ export default function UnsubscribePage() {
       <div className="max-w-[480px] mx-auto px-6 py-20">
         <h1 className="text-2xl font-semibold text-center mb-2">Email Preferences</h1>
         <p className="text-center text-muted mb-8">
-          Choose which emails you'd like to receive from Portfolio Builder.
+          Choose which emails you'd like to receive from MyFolio.
         </p>
 
         <div className="space-y-3">

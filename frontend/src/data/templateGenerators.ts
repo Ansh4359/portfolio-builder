@@ -120,7 +120,7 @@ function generateMinimal(data: PortfolioData): string {
     ${data.skills.length ? `<section id="skills"><h2 class="mono">Skills</h2><div class="skills-grid">${data.skills.map((s) => `<span class="skill-tag">${esc(s)}</span>`).join("")}</div></section>` : ""}
     ${data.projects.length ? `<section id="projects"><h2 class="mono">Projects</h2>${data.projects.map((p) => `<div class="project-item"><h3>${p.url ? `<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>` : esc(p.name)}</h3><p>${esc(p.description)}</p><div class="project-tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>`).join("")}</section>` : ""}
   </main>
-  <footer><div class="container"><p>${esc(data.name)} · Built with Portfolio Builder</p></div></footer>
+  <footer><div class="container"><p>${esc(data.name)} · Built with MyFolio</p></div></footer>
 </body>
 </html>`;
 }
@@ -271,7 +271,7 @@ function generateDeveloper(data: PortfolioData): string {
     ${data.experience.length ? `<div class="block" id="experience"><p class="block-title mono">// experience</p><div class="timeline">${data.experience.map((e) => `<div class="timeline-item"><h3>${esc(e.role)}</h3><p class="meta mono">${esc(e.company)} · ${esc(e.period)}</p><p>${esc(e.description)}</p></div>`).join("")}</div></div>` : ""}
     ${data.skills.length ? `<div class="block" id="skills"><p class="block-title mono">// skills</p><div class="skills-list">${data.skills.map((s) => `<span class="skill-badge">${esc(s)}</span>`).join("")}</div></div>` : ""}
     ${data.projects.length ? `<div class="block" id="projects"><p class="block-title mono">// projects</p><div class="project-list">${data.projects.map((p) => `<div class="project-entry"><h3>${p.url ? `<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>` : esc(p.name)}</h3><p>${esc(p.description)}</p><p class="tech-line mono">${p.tech.map((t) => esc(t)).join(" · ")}</p></div>`).join("")}</div></div>` : ""}
-    <footer><p>${esc(data.name)} — built with portfolio-builder</p></footer>
+    <footer><p>${esc(data.name)} — built with MyFolio</p></footer>
   </main>
 </div>
 </body>

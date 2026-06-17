@@ -13,9 +13,10 @@ import { generateMetaTags, generateTrackingScript } from "../lib/seo.js";
 import { sendDeploymentEmail } from "../lib/email.js";
 import type { PortfolioData } from "../types/index.js";
 
+const esc = (s: string) => (s ? String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;") : "");
+
 function renderAITemplate(htmlTemplate: string, data: PortfolioData): string {
   try {
-    const esc = (s: string) => (s ? String(s).replace(/</g, "&lt;").replace(/>/g, "&gt;") : "");
     const fn = new Function("data", "esc", "return `" + htmlTemplate + "`;");
     return fn(data, esc);
   } catch (err) {
@@ -106,7 +107,7 @@ router.post(
             .json({ error: `Template "${templateId}" not found` });
           return;
         }
-        html = template.generate(data);
+        html = template.generate(data, esc);
       }
 
       console.log(
@@ -222,7 +223,7 @@ router.post(
             .json({ error: `Template "${templateId}" not found` });
           return;
         }
-        html = template.generate(data);
+        html = template.generate(data, esc);
       }
 
       const deployedUrl = `https://${projectName}.${CUSTOM_DOMAIN}`;

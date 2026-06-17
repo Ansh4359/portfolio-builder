@@ -8,6 +8,8 @@ import type { PortfolioData } from "../types/index.js";
 
 const router = Router();
 
+const esc = (s: string) => (s ? String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;") : "");
+
 const samplePortfolio: PortfolioData = {
   name: "Alex Chen",
   title: "Full Stack Developer",
@@ -245,7 +247,7 @@ router.get("/:id/preview", (req: Request, res: Response) => {
     res.status(404).json({ error: "Template not found" });
     return;
   }
-  const html = template.generate(samplePortfolio);
+  const html = template.generate(samplePortfolio, esc);
   res.json({ html });
 });
 

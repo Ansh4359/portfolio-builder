@@ -5,7 +5,7 @@ function getResendClient(): Resend {
 }
 
 function getFromEmail(): string {
-  return process.env.RESEND_FROM_EMAIL || "Portfolio Builder <noreply@foliobuilder.com>";
+  return process.env.RESEND_FROM_EMAIL || "MyFolio <noreply@myfolio.codes>";
 }
 
 export async function sendDeploymentEmail(
@@ -36,7 +36,7 @@ export async function sendDeploymentEmail(
           </div>
           <div style="text-align: center; padding-top: 24px; border-top: 1px solid #eceae4;">
             <p style="color: #5f5f5d; font-size: 13px; margin: 0;">
-              —  MyFolio Codes Team
+              —  The MyFolio Team
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export async function sendMilestoneEmail(
           </div>
           <div style="text-align: center; padding-top: 24px; border-top: 1px solid #eceae4;">
             <p style="color: #5f5f5d; font-size: 13px; margin: 0;">
-              — The Portfolio Builder Team
+              — The MyFolio Team
             </p>
           </div>
         </div>
@@ -99,14 +99,14 @@ export async function sendMagicLinkEmail(
     await resend.emails.send({
       from: getFromEmail(),
       to,
-      subject: "Your sign-in link for Portfolio Builder",
+      subject: "Your sign-in link for MyFolio",
       html: `
         <!DOCTYPE html>
         <html lang="en">
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Sign in to Portfolio Builder</title>
+          <title>Sign in to MyFolio</title>
         </head>
         <body style="margin: 0; padding: 0; background-color: #f7f4ed; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
 
@@ -119,7 +119,7 @@ export async function sendMagicLinkEmail(
                   <!-- Header -->
                   <tr>
                     <td style="background-color: #1c1c1c; padding: 28px 40px; text-align: center;">
-                      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a49e;">Portfolio Builder</span>
+                      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a49e;">MyFolio</span>
                     </td>
                   </tr>
 
@@ -130,7 +130,7 @@ export async function sendMagicLinkEmail(
                         Here's your sign-in link
                       </p>
                       <p style="margin: 0 0 32px; font-size: 15px; color: #5f5f5d; line-height: 1.6;">
-                        Click the button below to sign in to your Portfolio Builder account. This link expires in 15 minutes.
+                        Click the button below to sign in to your MyFolio account. This link expires in 15 minutes.
                       </p>
 
                       <!-- CTA -->
@@ -139,7 +139,7 @@ export async function sendMagicLinkEmail(
                           <td>
                             <a href="${link}"
                               style="display: block; text-align: center; padding: 14px 24px; background-color: #1c1c1c; color: #fcfbf8; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; letter-spacing: 0.01em;">
-                              Sign In to Portfolio Builder →
+                              Sign In to MyFolio →
                             </a>
                           </td>
                         </tr>
@@ -158,7 +158,7 @@ export async function sendMagicLinkEmail(
                         Questions? Reply to this email anytime — we actually read them.
                       </p>
                       <p style="margin: 0; font-size: 12px; color: #c4c1bb;">
-                        © 2026 Portfolio Builder ·
+                        © 2026 MyFolio ·
                         <a href="https://myfolio.codes" style="color: #a8a49e; text-decoration: underline;">myfolio.codes</a>
                       </p>
                     </td>
@@ -196,7 +196,7 @@ export async function sendWelcomeEmail(
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Welcome to Portfolio Builder</title>
+          <title>Welcome to MyFolio</title>
         </head>
         <body style="margin: 0; padding: 0; background-color: #f7f4ed; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
 
@@ -211,7 +211,7 @@ export async function sendWelcomeEmail(
                   <!-- Header band -->
                   <tr>
                     <td style="background-color: #1c1c1c; padding: 28px 40px; text-align: center;">
-                      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a49e;">Portfolio Builder</span>
+                      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a49e;">MyFolio</span>
                     </td>
                   </tr>
 
@@ -303,7 +303,7 @@ export async function sendWelcomeEmail(
                         Questions? Reply to this email anytime — we actually read them.
                       </p>
                       <p style="margin: 0; font-size: 12px; color: #c4c1bb;">
-                        © 2026 Portfolio Builder · 
+                        © 2026 MyFolio · 
                         <a href="https://myfolio.codes/unsubscribe" style="color: #a8a49e; text-decoration: underline;">Unsubscribe</a>
                       </p>
                     </td>

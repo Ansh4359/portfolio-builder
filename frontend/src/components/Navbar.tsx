@@ -112,7 +112,7 @@ export default function Navbar() {
             className="text-xl font-semibold text-charcoal cursor-pointer"
             onClick={() => navigate("/")}
           >
-            Folio<span>Builder</span>
+            MyFolio
           </div>
 
           {/* Desktop nav */}
