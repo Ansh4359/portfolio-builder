@@ -86,14 +86,13 @@ export default function HomePage() {
             MyFolio
           </div>
           <h1 className="text-6xl font-semibold text-charcoal leading-[1.10] tracking-[-1.5px] mb-6">
-            Build Your Portfolio
+            Build Your AI Portfolio
             <br />
             in Minutes
           </h1>
           <p className="text-lg text-muted leading-[1.38] mb-10 max-w-[540px] mx-auto">
-            Create a stunning developer portfolio by filling out a simple form.
-            No coding required. Pick a template, customize, and deploy with one
-            click.
+            Upload your resume and AI does the rest. Choose a template, describe
+            your style, and go live on your own subdomain — all in minutes.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <button
