@@ -113,6 +113,17 @@ export async function uploadResume(file: File): Promise<PortfolioData> {
   return res.json();
 }
 
+export async function checkUser(email: string): Promise<boolean> {
+  const res = await fetch(`${API_BASE}/auth/check-user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) throw new Error("Failed to check user");
+  const data = await res.json();
+  return data.exists;
+}
+
 export async function fetchAccountInfo(): Promise<AccountInfo> {
   const res = await fetchWithAuth(`${API_BASE}/auth/me`);
   if (!res.ok) throw new Error("Failed to fetch account info");

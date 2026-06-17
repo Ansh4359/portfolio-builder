@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProfileGuard from "./components/ProfileGuard";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
@@ -157,14 +158,16 @@ function AppRoutes() {
         path="/template"
         element={
           <ProtectedRoute>
-            <TemplatePage
-              data={data}
-              selectedTemplate={selectedTemplate}
-              subdomain={subdomain}
-              onTemplateChange={setSelectedTemplate}
-              onSubdomainChange={setSubdomain}
-              isEdit={isEdit}
-            />
+            <ProfileGuard data={data}>
+              <TemplatePage
+                data={data}
+                selectedTemplate={selectedTemplate}
+                subdomain={subdomain}
+                onTemplateChange={setSelectedTemplate}
+                onSubdomainChange={setSubdomain}
+                isEdit={isEdit}
+              />
+            </ProfileGuard>
           </ProtectedRoute>
         }
       />
@@ -172,11 +175,13 @@ function AppRoutes() {
         path="/deploy"
         element={
           <ProtectedRoute>
-            <DeployPage
-              data={data}
-              selectedTemplate={selectedTemplate}
-              subdomain={subdomain}
-            />
+            <ProfileGuard data={data}>
+              <DeployPage
+                data={data}
+                selectedTemplate={selectedTemplate}
+                subdomain={subdomain}
+              />
+            </ProfileGuard>
           </ProtectedRoute>
         }
       />

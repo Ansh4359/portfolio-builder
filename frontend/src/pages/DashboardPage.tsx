@@ -156,7 +156,12 @@ export default function DashboardPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-[28px] font-semibold tracking-[-0.5px] mb-2">
-            Welcome back, {user?.displayName?.split(" ")[0] || user?.email?.split("@")[0] || "there"} 👋
+            {(() => {
+              const creationTime = user?.metadata?.creationTime;
+              const isNew = creationTime && (Date.now() - new Date(creationTime).getTime()) < 2 * 60 * 1000;
+              const name = user?.displayName?.split(" ")[0] || user?.email?.split("@")[0] || "there";
+              return isNew ? `Welcome, ${name}! 👋` : `Welcome back, ${name} 👋`;
+            })()}
           </h1>
           <p className="text-muted">Build and deploy your portfolio in minutes.</p>
         </div>

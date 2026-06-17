@@ -137,7 +137,7 @@ export async function sendMagicLinkEmail(
                       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                           <td>
-                            <a href="${link}"
+                            <a target="_blank"  rel="noopener noreferrer" href="${link}"
                               style="display: block; text-align: center; padding: 14px 24px; background-color: #1c1c1c; color: #fcfbf8; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; letter-spacing: 0.01em;">
                               Sign In to MyFolio →
                             </a>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { checkUser } from "../api";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -17,6 +18,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      if (isLogin) {
+        const exists = await checkUser(email);
+        if (!exists) {
+          toast.error("No account found. Please Signup");
+          setLoading(false);
+          return;
+        }
+      }
+
       await sendMagicLink(email, isLogin ? undefined : name);
       setLinkSent(true);
       toast.success("Magic link sent! Check your inbox.");

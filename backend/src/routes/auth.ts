@@ -18,6 +18,22 @@ const magicLinkLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+router.post("/check-user", async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email || typeof email !== "string") {
+      res.status(400).json({ error: "Valid email is required" });
+      return;
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    res.json({ exists: !!user });
+  } catch (error) {
+    console.error("Check user error:", error);
+    res.status(500).json({ error: "Failed to check user" });
+  }
+});
+
 router.post("/send-magic-link", magicLinkLimiter, async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
