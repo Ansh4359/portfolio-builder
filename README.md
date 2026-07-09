@@ -1,7 +1,4 @@
-<p align="center">
-  <!-- Upload logo.png to a GitHub Release and paste the raw URL below -->
-  <img src="https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/logo.png" alt="MyFolio Logo" width="120" />
-</p>
+
 
 <h1 align="center">MyFolio</h1>
 
