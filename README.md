@@ -27,7 +27,7 @@
 
 <p align="center">
   <!-- Upload hero.png to the same GitHub Release and paste the raw URL below -->
-  <img src="https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/hero.png" alt="MyFolio Landing Page" width="100%" />
+  <img src="https://res.cloudinary.com/bcddd1ri/image/upload/v1786465881/Screenshot_2026-08-11_at_10.00.58_PM.png" alt="MyFolio Landing Page" width="100%" />
 </p>
 
 ## About
