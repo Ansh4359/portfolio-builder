@@ -64,11 +64,11 @@
 
 | Landing Page | Dashboard |
 |:---:|:---:|
-| ![Landing Page](https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/landing.png) | ![Dashboard](https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/dashboard.png) |
+| ![Landing Page](https://res.cloudinary.com/bcddd1ri/image/upload/v1786465881/Screenshot_2026-08-11_at_10.00.58_PM.png) | ![Dashboard](https://res.cloudinary.com/bcddd1ri/image/upload/v1786466219/Screenshot_2026-08-11_at_10.05.15_PM.png) |
 
 | Template Selection | Deploy Page |
 |:---:|:---:|
-| ![Template Selection](https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/templates.png) | ![Deploy Page](https://github.com/YOUR_USERNAME/portfolio-builder/releases/download/v1.0-screenshots/deploy.png) |
+| ![Template Selection](https://res.cloudinary.com/bcddd1ri/image/upload/v1786466219/Screenshot_2026-08-11_at_10.05.45_PM.png) | ![Deploy Page](https://res.cloudinary.com/bcddd1ri/image/upload/v1786466219/Screenshot_2026-08-11_at_10.06.45_PM.png) |
 
 ---
 
@@ -446,5 +446,5 @@ Screenshots are hosted on GitHub Releases so they don't bloat the repo. To add o
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/your-username">Your Name</a>
+  Made with ❤️ by <a href="https://github.com/ansh4359">Ansh</a>
 </p>
